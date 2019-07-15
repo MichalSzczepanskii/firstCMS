@@ -5,14 +5,14 @@ block content
     form(action="/users/register", method="POST")
         .form-group
             label Nazwa użytkownika:
-            input(name="name", type="text")
+            input.form-control(name="name", type="text")
         .form-group
             label Email:
-            input(name="name", type="text")
+            input.form-control(name="name", type="text")
         .form-group
             label Hasło:
-            input(name="name", type="text")
+            input.form-control(name="name", type="text")
         .form-group
             label Powtórz hasło:
-            input(name="name", type="text")
-        input(type="submit", value="Zarejestruj")
+            input.form-control(name="name", type="text")
+        input.btn-submit(type="submit", value="Zarejestruj")
