@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 
 //Setup validation
 const { check, validationResult } = require('express-validator');
@@ -26,7 +27,31 @@ router.post('/register',[
             errors: errors.array()
         })
     }else{
-        res.redirect('/');
+        let nickname = req.body.nickname;
+        let email = req.body.email;
+        let newUser = new User({
+            username: nickname.toLowerCase(),
+            email: email.toLowerCase(),
+            password: req.body.password
+        });
+
+        bcrypt.genSalt(10, (err, salt)=>{
+            bcrypt.hash(newUser.password, salt, (err, hash) =>{
+                if(err){
+                    console.log(err);
+                }
+                newUser.password = hash;
+                newUser.save((err) =>{
+                    if(err){
+                        console.log(err);
+                        return;
+                    }else{
+                        req.flash('success','Rejestracja przebiegła pomyślnie. Możesz się teraz zalogować.');
+                        res.redirect('/');
+                    }
+                })
+            })
+        })
     }
 
 });
