@@ -15,6 +15,11 @@ app.get('/',(req, res) => {
     res.render('index');
 })
 
+//Route files
+const users = require('./routes/users');
+
+app.use('/users', users);
+
 //Start server
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server is listening on port ${port}...`));
