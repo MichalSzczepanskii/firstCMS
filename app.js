@@ -3,8 +3,18 @@ const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+const config = require('./config/database');
 
 const app = express();
+
+//Database
+mongoose.connect(config.database,{ useNewUrlParser: true});
+let db = mongoose.connection;
+
+db.once('open', () => console.log('Connected to MongoDB'));
+db.on('error', (err) => console.log(err));
 
 //View engine
 app.set('views', path.join(__dirname, 'views'));
