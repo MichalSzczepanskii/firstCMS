@@ -13,6 +13,7 @@ html
                     a.navlink(href='/users/register') Rejestracja
 
         main.container-body
+            != messages('message', locals)
             block content
             footer
                 hr
