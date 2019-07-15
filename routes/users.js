@@ -4,13 +4,18 @@ const router = express.Router();
 //Setup validation
 const { check, validationResult } = require('express-validator');
 
+//User Model
+const User = require('../models/user');
+
+
 router.get('/register', (req, res) => {
     res.render('register');
 })
 
 router.post('/register',[
     check('nickname','Nazwa użytkownika jest wymagana.').not().isEmpty(),
-    check('email','Email jest wymagany.').not().isEmpty(),
+    check('email','Email jest wymagany.').not().isEmpty()
+        .isEmail().withMessage('Niepoprawny email.'),
     check('password','Hasło jest wymagane.').not().isEmpty()
         .custom((value, {req})=> value === req.body.password2).withMessage("Hasła nie są zgodne.")
 ], (req, res) => {
