@@ -2,9 +2,18 @@ doctype html
 html
     head(lang='pl')
         title First
-        link(rel='stylesheet' link='css/style.css')
+        link(rel='stylesheet' href='/css/style.css')
     body
-        .container
+        nav.navbar
+            .container
+                a.navtitle(href='/') First
+                a.navlink(href='/') Strona główna
+                .navlink-right
+                    a.navlink(href='/users/login') Logowanie
+                    a.navlink(href='/users/register') Rejestracja
+
+        main.container-body
             block content
-        footer
-            p Copyright &copy; 2019
+            footer
+                hr
+                p Copyright &copy; 2019
