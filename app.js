@@ -2,12 +2,17 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
+const bodyParser = require('body-parser');
 
 const app = express();
 
 //View engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine','pug');
+
+//Body Parser Middleware
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 //Setup public folder
 app.use(express.static(path.join(__dirname,'public')));
