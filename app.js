@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const app = express();
 
@@ -9,6 +11,24 @@ app.set('view engine','pug');
 
 //Setup public folder
 app.use(express.static(path.join(__dirname,'public')));
+
+//Session middleware
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true
+}));
+
+//Flash Middleware
+app.use(flash());
+
+//Messages middleware
+app.use(function (req, res, next) {
+    res.locals.messages = require('express-messages')(req, res);
+    next();
+});
+
 
 //Home route
 app.get('/',(req, res) => {
