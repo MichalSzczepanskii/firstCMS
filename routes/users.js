@@ -15,7 +15,7 @@ router.get('/register', (req, res) => {
 router.post('/register',[
     check('nickname','Nazwa użytkownika jest wymagana.').not().isEmpty(),
     check('email','Email jest wymagany.').not().isEmpty()
-        .isEmail().withMessage('Niepoprawny email.'),
+        .isEmail().withMessage('Email jest niepoprawny.'),
     check('password','Hasło jest wymagane.').not().isEmpty()
         .custom((value, {req})=> value === req.body.password2).withMessage("Hasła nie są zgodne.")
 ], (req, res) => {
