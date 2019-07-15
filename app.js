@@ -3,8 +3,12 @@ const path = require('path');
 
 const app = express();
 
+//View engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine','pug');
+
+//Setup public folder
+app.use(express.static(path.join(__dirname,'public')));
 
 //Home route
 app.get('/',(req, res) => {
