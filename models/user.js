@@ -10,6 +10,10 @@ const UserSchema = mongoose.Schema({
         type: String,
         require: true
     },
+    type:{
+        type: String,
+        default: 'user'
+    },
     password:{
         type: String,
         required: true
