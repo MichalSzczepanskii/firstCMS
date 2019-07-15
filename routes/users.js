@@ -14,9 +14,19 @@ router.get('/register', (req, res) => {
 })
 
 router.post('/register',[
-    check('nickname','Nazwa użytkownika jest wymagana.').not().isEmpty(),
+    check('nickname','Nazwa użytkownika jest wymagana.').not().isEmpty()
+        .custom(async (value)=>{
+            let user = await User.findOne({username: value.toLowerCase()});
+            if (user) throw new Error("Podana nazwa użytkownika jest zajęta.");
+            else return value;
+        }),
     check('email','Email jest wymagany.').not().isEmpty()
-        .isEmail().withMessage('Email jest niepoprawny.'),
+        .isEmail().withMessage('Email jest niepoprawny.')
+        .custom(async (value)=>{
+            let user = await User.findOne({email: value.toLowerCase()});
+            if (user) throw new Error("Podany adres email jest już w użyciu.");
+            else return value;
+        }),
     check('password','Hasło jest wymagane.').not().isEmpty()
         .custom((value, {req})=> value === req.body.password2).withMessage("Hasła nie są zgodne.")
 ], (req, res) => {
