@@ -9,8 +9,12 @@ html
                 a.navtitle(href='/') First
                 a.navlink(href='/') Strona główna
                 .navlink-right
-                    a.navlink(href='/users/login') Logowanie
-                    a.navlink(href='/users/register') Rejestracja
+                    if user
+                        form(action='/users/logout', method='POST')
+                            input.navlink-btn(type='submit', value='Wyloguj')
+                    else
+                        a.navlink(href='/users/login') Logowanie
+                        a.navlink(href='/users/register') Rejestracja
 
         main.container-body
             != messages('message', locals)
