@@ -4,6 +4,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const passport = require('passport');
 
 const config = require('./config/database');
 
@@ -44,6 +45,17 @@ app.use(function (req, res, next) {
     next();
 });
 
+//Passport Config
+require('./config/passport')(passport);
+//Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+//Global Variable For User Session
+app.get('*', (req, res, next) =>{
+  res.locals.user = req.user || null;
+  next();
+})
 
 //Home route
 app.get('/',(req, res) => {

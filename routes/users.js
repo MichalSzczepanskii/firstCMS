@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 //Setup validation
 const { check, validationResult } = require('express-validator');
@@ -9,12 +10,13 @@ const { check, validationResult } = require('express-validator');
 const User = require('../models/user');
 
 
+//Register
 router.get('/register', (req, res) => {
     res.render('register');
 })
 
 router.post('/register',[
-    check('nickname','Nazwa użytkownika jest wymagana.').not().isEmpty()
+    check('username','Nazwa użytkownika jest wymagana.').not().isEmpty()
         .custom(async (value)=>{
             let user = await User.findOne({username: value.toLowerCase()});
             if (user) throw new Error("Podana nazwa użytkownika jest zajęta.");
@@ -37,10 +39,10 @@ router.post('/register',[
             errors: errors.array()
         })
     }else{
-        let nickname = req.body.nickname;
+        let username = req.body.username;
         let email = req.body.email;
         let newUser = new User({
-            username: nickname.toLowerCase(),
+            username: username.toLowerCase(),
             email: email.toLowerCase(),
             password: req.body.password
         });
@@ -65,5 +67,20 @@ router.post('/register',[
     }
 
 });
+
+//Login
+router.get('/login', (req, res) => {
+    res.render('login');
+})
+
+router.post('/login', (req, res, next) => {
+    passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/users/login',
+        failureFlash: true,
+        successFlash: "Logowanie przebiegło pomyślnie.",
+        //badRequestMessage: "Nie wypełniony formularza"
+    })(req, res, next)
+})
 
 module.exports = router;
