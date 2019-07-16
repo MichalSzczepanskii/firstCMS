@@ -1,0 +1,7 @@
+Account types:
+	admin - read, add, modify, remove, change acc type, ban
+	user - read 
+	moderator - read, add articles, modify and remove all articles
+	journalist - read, adding articles, modify and remove only own articles
+	
+Modify and remove other user article - try to add messages to this action with reason
