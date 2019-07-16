@@ -83,4 +83,11 @@ router.post('/login', (req, res, next) => {
     })(req, res, next)
 })
 
+//Logout
+router.post('/logout', (req, res, next) => {
+    req.logout();
+    req.flash('success', 'Pomyślnie wylogowaneo.');
+    res.redirect('/users/login');
+})
+
 module.exports = router;
