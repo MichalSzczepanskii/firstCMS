@@ -59,22 +59,51 @@ app.get('*', (req, res, next) =>{
 
 //Bring in models
 const Article = require('./models/article');
+const User = require('./models/user');
 
 //Home route
 app.get('/',(req, res) => {
-    Article.aggregate([{$project: {"title": "$title", "author": "$author", "date": "$date" ,"short": {$substr: ["$content", 0, 100]}}}], (err, articles) =>{
+    Article.aggregate(
+      [{$project: 
+        {
+        "title": "$title", 
+        "author": {$toObjectId: "$author"},
+        "date": "$date" ,
+        "short": {$substr: ["$content", 0, 750]}
+        }
+      },
+      {
+        $lookup: {
+          from: "users", 
+          localField: "author", 
+          foreignField: "_id", 
+          as: "user"
+        }
+      },
+      {$project: 
+        {
+        "title": 1, 
+        "author": "$user.username",
+        "date": 1 ,
+        "short": 1}
+      },
+      {$sort: {date: -1}}
+      ]
+  , (err, articles) =>{
       if (err){
         console.log(err);
       }else{
         res.render('index',{
           articles
-        });
+        })
       }
     });
     
 })
 
-
+app.locals.ucfirst = function(value){
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
 
 //Route files
 const users = require('./routes/users');
