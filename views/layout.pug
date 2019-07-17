@@ -8,6 +8,7 @@ html
             .container
                 a.navtitle(href='/') First
                 a.navlink(href='/') Strona główna
+                a.navlink(href='/articles/add') Dodaj artykuł
                 .navlink-right
                     if user
                         form(action='/users/logout', method='POST')

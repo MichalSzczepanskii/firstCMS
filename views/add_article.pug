@@ -1,0 +1,12 @@
+extends layout
+
+block content
+    h1 Dodaj artykuł
+    form(action="/articles/add", method="POST")
+        .form-group
+            label Tytuł:
+            input.form-control(name="title", type="text")
+        .form-group
+            label Treść:
+            textarea.form-textarea(name="content")
+        input.btn-submit(type="submit", value="Dodaj")
