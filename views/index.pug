@@ -3,13 +3,14 @@ extends layout
 block content
     h1 Strona główna
     each article, i in articles
-        article
-            h2
+        article.home-article
+            h2.home-article-title
                 a(href="/articles/"+article._id)= article.title
-            div Autor: #{ucfirst(article.author[0])}
-            p #{article.short}...
+            div.home-article-author Autor: #{ucfirst(article.author[0])}
+            p.home-article-content #{article.short}...
             -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
             -var d = article.date.getDate()
             -var m = monthName[article.date.getMonth()]
             -var y = article.date.getFullYear()
-            p Dodano: #{d} #{m} #{y}
+            hr
+            p.home-article-date Dodano: #{d} #{m} #{y}
