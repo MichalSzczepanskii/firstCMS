@@ -13,6 +13,10 @@ const ArticleSchema = mongoose.Schema({
     content:{
         type: String,
         require: true
+    },
+    date:{
+        type: Date,
+        default: new Date()
     }
 })
 

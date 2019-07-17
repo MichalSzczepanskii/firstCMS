@@ -2,3 +2,13 @@ extends layout
 
 block content
     h1 Strona główna
+    each article, i in articles
+        article
+            h2
+                a(href="/articles/"+article._id)= article.title
+            p #{article.short}
+            -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
+            -var d = article.date.getDate()
+            -var m = monthName[article.date.getMonth()]
+            -var y = article.date.getFullYear()
+            p Dodano: #{d} #{m} #{y}

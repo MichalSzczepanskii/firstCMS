@@ -57,10 +57,24 @@ app.get('*', (req, res, next) =>{
   next();
 })
 
+//Bring in models
+const Article = require('./models/article');
+
 //Home route
 app.get('/',(req, res) => {
-    res.render('index');
+    Article.aggregate([{$project: {"title": "$title", "author": "$author", "date": "$date" ,"short": {$substr: ["$content", 0, 100]}}}], (err, articles) =>{
+      if (err){
+        console.log(err);
+      }else{
+        res.render('index',{
+          articles
+        });
+      }
+    });
+    
 })
+
+
 
 //Route files
 const users = require('./routes/users');

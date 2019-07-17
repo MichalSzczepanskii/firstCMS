@@ -25,7 +25,7 @@ router.post('/add',[
         const article = new Article();
         article.title = req.body.title;
         article.author = req.user._id;
-        article.content = req.user.content;
+        article.content = req.body.content;
 
         article.save((err) => {
             if (err){
