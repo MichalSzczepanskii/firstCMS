@@ -84,6 +84,7 @@ app.get('/',(req, res) => {
         {
         "title": 1, 
         "author": "$user.username",
+        "author_id": "$user._id",
         "date": 1 ,
         "short": 1}
       },

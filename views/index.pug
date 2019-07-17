@@ -6,7 +6,8 @@ block content
         article.home-article
             h2.home-article-title
                 a(href="/articles/"+article._id)= article.title
-            div.home-article-author Autor: #{ucfirst(article.author[0])}
+            div.home-article-author Autor: 
+                a(href="/users/"+article.author_id) #{ucfirst(article.author[0])}
             p.home-article-content #{article.short}...
             -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
             -var d = article.date.getDate()
