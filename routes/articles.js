@@ -56,7 +56,7 @@ router.get('/:id', (req, res) => {
                 }else{
                     let allowEdit = '';
                     if (req.user){
-                        if (req.user.id == user.id || req.user.type == 'admin' || req.user.type =='moderator'){
+                        if (req.user.id.toString() == user.id.toString() || req.user.type == 'admin' || req.user.type =='moderator'){
                             allowEdit = true;
                         }
                         if (user.type == 'admin' && req.user.type=='moderator'){
@@ -75,7 +75,52 @@ router.get('/:id', (req, res) => {
             })
         }
     })
-})
+});
+
+//Display edit form
+router.get('/edit/:id', ensureAuthenticated, userDenied, (req, res) => {
+    Article.findById(req.params.id, (err, article) => {
+        User.findById(article.author, (err, user)=>{
+            if (req.user.type != 'admin' && user.type == 'admin'){
+                req.flash('error','Brak dostępu.');
+                res.redirect('/');
+            }else{
+                let ownByEditor = '';
+                if (user._id.toString() != req.user._id.toString()){
+                    ownByEditor = false
+                }else
+                {
+                    ownByEditor = true
+                }
+                res.render('edit_article',{
+                    articleAuthor: user,
+                    article,
+                    ownByEditor
+                });
+            }
+        })
+    })
+});
+//Handling article edit
+router.post('/edit/:id', ensureAuthenticated, userDenied, (req, res) => {
+    Article.findById(req.params.id, (err, article) => {
+        User.findById(article.author, (err, user)=>{
+            if (req.user.type != 'admin' && user.type == 'admin'){
+                req.flash('error','Brak dostępu.');
+                res.redirect('/');
+            }else{
+                let ownByEditor = '';
+                if (user._id.toString() != req.user._id.toString()){
+                    ownByEditor = false
+                }else
+                {
+                    ownByEditor = true
+                }
+                console.log(req.body);
+            }
+        })
+    })
+});
 
 
 //Take access from usual user

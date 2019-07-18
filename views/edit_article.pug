@@ -1,0 +1,20 @@
+extends layout
+
+block content
+    if ownByEditor
+        h1 Edytuj artykuł
+    else
+        h1 Edytuj artykuł  użytkownika #{ucfirst(articleAuthor.username)}
+    
+    form(action="/articles/edit/"+article._id, method="POST")
+        .form-group
+            label Tytuł:
+            input.form-control(name="title", type="text", value=article.title)
+        .form-group
+            label Treść:
+            textarea.form-textarea(name="content")= article.content
+        if !ownByEditor
+            .form-group
+                label Powód edycji:
+                input.form-control(name="reason", type="text")
+        input.btn.btn-submit(type="submit", value="Dodaj")
