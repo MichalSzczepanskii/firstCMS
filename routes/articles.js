@@ -42,86 +42,82 @@ router.post('/add',[
 })
 
 //Displaying article
-router.get('/:id', (req, res) => {
-    Article.findById(req.params.id, (err, article)=>{
-        
-        if(err){
-            console.log(err);
-            return
-        }else{
-            User.findById(article.author, (err, user) =>{
-                if(err){
-                    console.log(err);
-                    return;
-                }else{
-                    let allowEdit = '';
-                    if (req.user){
-                        if (req.user.id.toString() == user.id.toString() || req.user.type == 'admin' || req.user.type =='moderator'){
-                            allowEdit = true;
-                        }
-                        if (user.type == 'admin' && req.user.type=='moderator'){
-                            allowEdit = false;
-                        }
-                    }
-                    else{
-                        allowEdit = false;
-                    }
-                    res.render('article',{
-                        article,
-                        author: user.username,
-                        allowEdit
-                    });
-                }
-            })
-        }
-    })
+router.get('/:id', async(req, res) => {
+    const {article, articleAuthor} = await articleAndUserById(req.params.id)
+    
+    res.render('article',{
+        article,
+        author: articleAuthor.username,
+        allowEdit: allowEdit(articleAuthor, req)
+    });
+                
 });
 
 //Display edit form
-router.get('/edit/:id', ensureAuthenticated, userDenied, (req, res) => {
-    Article.findById(req.params.id, (err, article) => {
-        User.findById(article.author, (err, user)=>{
-            if (req.user.type != 'admin' && user.type == 'admin'){
-                req.flash('error','Brak dostępu.');
-                res.redirect('/');
-            }else{
-                let ownByEditor = '';
-                if (user._id.toString() != req.user._id.toString()){
-                    ownByEditor = false
-                }else
-                {
-                    ownByEditor = true
-                }
-                res.render('edit_article',{
-                    articleAuthor: user,
-                    article,
-                    ownByEditor
-                });
-            }
-        })
-    })
+router.get('/edit/:id', ensureAuthenticated, userDenied, async (req, res) => {
+    const {article, articleAuthor} = await articleAndUserById(req.params.id)
+    if(!doNotOverideAdmin(req, res, articleAuthor)){
+        res.render('edit_article',{
+            articleAuthor,
+            article,
+            ownByEditor: ownByEditor(articleAuthor, req)
+        });
+    }
+            
 });
 //Handling article edit
-router.post('/edit/:id', ensureAuthenticated, userDenied, (req, res) => {
-    Article.findById(req.params.id, (err, article) => {
-        User.findById(article.author, (err, user)=>{
-            if (req.user.type != 'admin' && user.type == 'admin'){
-                req.flash('error','Brak dostępu.');
-                res.redirect('/');
-            }else{
-                let ownByEditor = '';
-                if (user._id.toString() != req.user._id.toString()){
-                    ownByEditor = false
-                }else
-                {
-                    ownByEditor = true
-                }
-                console.log(req.body);
-            }
-        })
-    })
+router.post('/edit/:id', ensureAuthenticated, userDenied, async (req, res) => {
+    const {article, articleAuthor} = await articleAndUserById(req.params.id);
+    if(!doNotOverideAdmin(req, res, articleAuthor)){
+        console.log(req.body);
+
+    }  
 });
 
+//Check if user has permission to edit
+function allowEdit(articleAuthor, req){
+    if (req.user)
+    {
+        if (req.user.id.toString() == articleAuthor.id.toString() || req.user.type == 'admin' || req.user.type =='moderator'){
+            if (articleAuthor.type == 'admin' && req.user.type=='moderator') return false;
+            else return true
+
+        }else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//Check if user that want to edit article own it
+function ownByEditor(articleAuthor, req){
+    if (articleAuthor._id.toString() != req.user._id.toString()){
+        return false
+    }else
+    {
+        return true
+    } 
+}
+
+//Return article info from articles and author info from users
+async function articleAndUserById(id){
+    let article = await Article.findById(id);
+    let articleAuthor = await User.findById(article.author);
+    return {article, articleAuthor}
+}
+
+//Protection that not allow moderator to overide admin
+function doNotOverideAdmin(req, res, articleAuthor){
+    if (req.user.type != 'admin' && articleAuthor.type == 'admin'){
+        req.flash('error','Brak dostępu.');
+        res.redirect('/');
+        return true;
+    }
+}
 
 //Take access from usual user
 function userDenied(req, res, next){
