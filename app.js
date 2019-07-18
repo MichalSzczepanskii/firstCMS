@@ -88,7 +88,7 @@ app.get('/',(req, res) => {
         "date": 1 ,
         "short": 1}
       },
-      {$sort: {date: -1}}
+      {$sort: {_id: -1}}
       ]
   , (err, articles) =>{
       if (err){

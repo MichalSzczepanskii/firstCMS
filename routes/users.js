@@ -10,12 +10,14 @@ const { check, validationResult } = require('express-validator');
 const User = require('../models/user');
 
 
-//Register
+//Display register form
 router.get('/register', (req, res) => {
     res.render('register');
 })
 
+//Handle register form
 router.post('/register',[
+    //Validation
     check('username','Nazwa użytkownika jest wymagana.').not().isEmpty()
         .custom(async (value)=>{
             let user = await User.findOne({username: value.toLowerCase()});
@@ -33,12 +35,14 @@ router.post('/register',[
         .custom((value, {req})=> value === req.body.password2).withMessage("Hasła nie są zgodne.")
 ], (req, res) => {
 
+    //Handle errors
     let errors = validationResult(req);
     if(!errors.isEmpty()){
         res.render('register',{
             errors: errors.array()
         })
     }else{
+        //Add user
         let username = req.body.username;
         let email = req.body.email;
         let newUser = new User({
@@ -68,18 +72,19 @@ router.post('/register',[
 
 });
 
-//Login
+//Display login form
 router.get('/login', (req, res) => {
     res.render('login');
 })
 
+//Handle login form
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', {
         successRedirect: '/',
         failureRedirect: '/users/login',
         failureFlash: true,
         successFlash: "Logowanie przebiegło pomyślnie.",
-        //badRequestMessage: "Nie wypełniony formularza"
+        badRequestMessage: "Nie wypełniony formularza"
     })(req, res, next)
 })
 
