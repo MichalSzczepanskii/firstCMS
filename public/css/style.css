@@ -405,18 +405,42 @@ footer p
     border-radius: 3px;
     border: 1px solid #333;
 }
+.link-btn{
+  display: block;
+  height: 23px;
+  line-height: 21px;
+  width: 88px;
+  text-align: center;
+  border-radius: 3px;
+  margin-top: 15px;
+  padding: 5px;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+.btn{
+  height: 35px;
+  width: 100px;
+  border-radius: 3px;
+  margin-top: 15px;
+  padding: 5px;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
 .btn-submit{
     background-color: #4CAF50;
     color: white;
-    height: 35px;
-    width: 100px;
-    border: 1px solid rgb(47, 110, 49);
-    border-radius: 3px;
-    margin-top: 15px;
-    padding: 5px;
+    border-color: rgb(47, 110, 49);
 }
 .btn-submit:hover{
     background-color: rgb(46, 104, 48);
+}
+.btn-edit{
+  background-color: rgb(40, 127, 240);
+  color: white;
+  border-color: rgb(23, 71, 134);
+}
+.btn-edit:hover{
+  background-color: rgb(10, 71, 150);
 }
 
 .alert{

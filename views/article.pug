@@ -11,7 +11,7 @@ block content
         -var m = monthName[article.date.getMonth()]
         -var y = article.date.getFullYear()
         if allowEdit
-            div 
-                a(href="/articles/edit" + article._id) Edytuj
+            div    
+                a.link-btn.btn-edit(href="/articles/edit" + article._id) Edytuj
         hr
         p.home-article-date Dodano: #{d} #{m} #{y}
