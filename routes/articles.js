@@ -8,10 +8,12 @@ const { check, validationResult } = require('express-validator');
 const Article = require('../models/article');
 const User = require('../models/user');
 
+//Displaying form for adding article
 router.get('/add',ensureAuthenticated, userDenied, (req, res) =>{
     res.render('add_article.pug');
 })
 
+//Handle post request from form
 router.post('/add',[
     check('title','Tytuł jest wymagany.').not().isEmpty(),
     check('content','Treść jest wymagana.').not().isEmpty()
@@ -39,7 +41,7 @@ router.post('/add',[
     }
 })
 
-
+//Displaying article
 router.get('/:id', (req, res) => {
     Article.findById(req.params.id, (err, article)=>{
         
@@ -76,6 +78,7 @@ router.get('/:id', (req, res) => {
 })
 
 
+//Take access from usual user
 function userDenied(req, res, next){
     if (req.user.type == 'user'){
         req.flash('error', 'Brak dostępu.');
@@ -85,6 +88,7 @@ function userDenied(req, res, next){
     }
 }
 
+//Protection from not logged users
 function ensureAuthenticated(req, res, next){
     if(req.isAuthenticated()){
         return next();
