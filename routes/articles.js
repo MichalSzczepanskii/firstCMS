@@ -6,7 +6,7 @@ const { check, validationResult } = require('express-validator');
 
 //Article Model
 const Article = require('../models/article');
-
+const User = require('../models/user');
 
 router.get('/add',ensureAuthenticated, userDenied, (req, res) =>{
     res.render('add_article.pug');
@@ -38,6 +38,40 @@ router.post('/add',[
         })
     }
 })
+
+
+router.get('/:id', (req, res) => {
+    Article.findById(req.params.id, (err, article)=>{
+        
+        if(err){
+            console.log(err);
+            return
+        }else{
+            User.findById(article.author, (err, user) =>{
+                if(err){
+                    console.log(err);
+                    return;
+                }else{
+                    let allowEdit = '';
+                    if (req.user){
+                        if (req.user.id == article.author || req.user.type == 'admin' || req.user.type =='moderator'){
+                            allowEdit = true;
+                        }
+                    }
+                    else{
+                        allowEdit = false;
+                    }
+                    res.render('article',{
+                        article,
+                        author: user.username,
+                        allowEdit
+                    });
+                }
+            })
+        }
+    })
+})
+
 
 function userDenied(req, res, next){
     if (req.user.type == 'user'){

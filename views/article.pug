@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    article.home-article
+        h2.home-article-title #{article.title}
+        div.home-article-author Autor: 
+            a(href="/users/"+article.author) #{ucfirst(author)}
+        p.home-article-content #{article.content}...
+        -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
+        -var d = article.date.getDate()
+        -var m = monthName[article.date.getMonth()]
+        -var y = article.date.getFullYear()
+        if allowEdit
+            div 
+                a(href="/articles/edit" + article._id) Edytuj
+        hr
+        p.home-article-date Dodano: #{d} #{m} #{y}
