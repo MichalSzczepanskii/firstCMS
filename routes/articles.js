@@ -54,8 +54,11 @@ router.get('/:id', (req, res) => {
                 }else{
                     let allowEdit = '';
                     if (req.user){
-                        if (req.user.id == article.author || req.user.type == 'admin' || req.user.type =='moderator'){
+                        if (req.user.id == user.id || req.user.type == 'admin' || req.user.type =='moderator'){
                             allowEdit = true;
+                        }
+                        if (user.type == 'admin' && req.user.type=='moderator'){
+                            allowEdit = false;
                         }
                     }
                     else{
