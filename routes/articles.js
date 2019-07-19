@@ -82,15 +82,9 @@ function allowEdit(articleAuthor, req){
             if (articleAuthor.type == 'admin' && req.user.type=='moderator') return false;
             else return true
 
-        }else
-        {
-            return false;
-        }
+        }else return false;
     }
-    else
-    {
-        return false;
-    }
+    else return false;
 }
 
 //Check if user that want to edit article own it
