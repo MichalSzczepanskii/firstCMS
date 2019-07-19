@@ -3,16 +3,16 @@ const mongoose = require('mongoose');
 //User Schema
 const ArticleEditLogSchema = mongoose.Schema({
     articleId:{
-        type: ObjectId,
+        type: String,
         required: true,
+    },
+    author:{
+        type: String,
+        require: true,
     },
     reason:{
         type: String,
         required: true
-    },
-    author:{
-        type: String,
-        require: true
     },
     date:{
         type: Date,
