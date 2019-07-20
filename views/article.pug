@@ -5,13 +5,23 @@ block content
         h2.home-article-title #{article.title}
         div.home-article-author Autor: 
             a(href="/users/"+article.author) #{ucfirst(author)}
-        p.home-article-content #{article.content}...
+        p.home-article-content #{article.content}
         -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-        -var d = article.date.getDate()
-        -var m = monthName[article.date.getMonth()]
-        -var y = article.date.getFullYear()
         if allowEdit
             div    
                 a.link-btn.btn-edit(href="/articles/edit/" + article._id) Edytuj
+        if logs
+            each log, i in logs
+                -var d = log.date.getDate()
+                -var m = monthName[log.date.getMonth()]
+                -var y = log.date.getFullYear()
+                div.articleLogs 
+                    span Artykuł edytowany przez: 
+                    a(href="/users/"+log.editorId)= ucfirst(log.editor[0])
+                    span  | Powód: #{log.reason}
+                    span  | #{d} #{m} #{y}
         hr
+        -var d = article.date.getDate()
+        -var m = monthName[article.date.getMonth()]
+        -var y = article.date.getFullYear()
         p.home-article-date Dodano: #{d} #{m} #{y}

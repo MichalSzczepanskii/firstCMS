@@ -7,6 +7,7 @@ const { check, validationResult } = require('express-validator');
 //Article Model
 const Article = require('../models/article');
 const User = require('../models/user');
+const ArticleEditLog = require('../models/articleEditLog');
 
 //Displaying form for adding article
 router.get('/add',ensureAuthenticated, userDenied, (req, res) =>{
@@ -43,13 +44,53 @@ router.post('/add',[
 
 //Displaying article
 router.get('/:id', async(req, res) => {
-    const {article, articleAuthor} = await articleAndUserById(req.params.id)
-    
-    res.render('article',{
-        article,
+    const {article, articleAuthor} = await articleAndUserById(req.params.id);
+    let redirect = {article,
         author: articleAuthor.username,
         allowEdit: allowEdit(articleAuthor, req)
-    });
+    };
+    if(req.user){
+        if(ownByEditor(articleAuthor, req) || req.user.type=='admin' || req.user.type == 'moderator'){
+            let logs = await ArticleEditLog.aggregate([
+                {
+                    $match:{
+                        articleId: req.params.id
+                    }
+                },
+                {
+                    $project:{
+                        editor: {$toObjectId: "$editedBy"},
+                        editorId: "$editedBy",
+                        reason: 1,
+                        date: 1
+                    }
+                },  
+                {
+                    $lookup:{
+                        from: 'users',
+                        localField: 'editor',
+                        foreignField: '_id',
+                        as: 'edit'
+                    }
+                },
+                {
+                    $project:{
+                        editor: '$edit.username',
+                        editorId: 1,
+                        reason: 1,
+                        date: 1
+                    }
+                },
+                {
+                    $sort: {
+                        _id: -1
+                    }
+                }
+            ]);
+            redirect.logs = logs;
+        }
+    }    
+    res.render('article', redirect);
                 
 });
 
@@ -66,11 +107,48 @@ router.get('/edit/:id', ensureAuthenticated, userDenied, async (req, res) => {
             
 });
 //Handling article edit
-router.post('/edit/:id', ensureAuthenticated, userDenied, async (req, res) => {
+router.post('/edit/:id',[
+    check('title','Tytuł jest wymagany.').not().isEmpty(),
+    check('content','Treść jest wymagana.').not().isEmpty()
+], ensureAuthenticated, userDenied, async (req, res) => {
     const {article, articleAuthor} = await articleAndUserById(req.params.id);
     if(!doNotOverideAdmin(req, res, articleAuthor)){
-        console.log(req.body);
+        let errors = validationResult(req);
+        if(!errors.isEmpty()){
+            res.render('add_article',{
+                errors: errors.array()
+            })
+        }else{
+            if(typeof req.body.reason !== 'undefined'){
+                if (req.body.reason == ''){
+                    req.flash('error','Powód jest wymagany.');
+                    res.redirect('/articles/edit/' + req.params.id);
+                }else{
+                    const log = new ArticleEditLog();
+                    log.articleId = article._id;
+                    log.author = article.author;
+                    log.editedBy = req.user._id;
+                    log.reason = req.body.reason;
 
+                    log.save((err)=>{
+                        if(err){
+                            console.log(err);
+                            return;
+                        }
+                    });
+                }
+            }
+            Article.updateOne({_id: req.params.id}, {$set: {title: req.body.title, content: req.body.content}}, (err) =>{
+                if(err){
+                    console.log(err);
+                    return;
+                }else{
+                    req.flash('success', 'Artykuł został pomyślnie edytowany.');
+                    res.redirect('/articles/' + req.params.id);
+                }
+            });
+            
+        }
     }  
 });
 

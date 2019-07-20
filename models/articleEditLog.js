@@ -6,9 +6,13 @@ const ArticleEditLogSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    author:{
+    authorId:{
         type: String,
         require: true,
+    },
+    editedBy:{
+        type: String,
+        require: true,  
     },
     reason:{
         type: String,
@@ -20,4 +24,4 @@ const ArticleEditLogSchema = mongoose.Schema({
     }
 })
 
-const User = module.exports = mongoose.model('ArticleEditLog', ArticleEditLogSchema, 'articles');
+const User = module.exports = mongoose.model('ArticleEditLog', ArticleEditLogSchema, 'articleEditLog');
