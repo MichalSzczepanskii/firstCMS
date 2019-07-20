@@ -1,12 +1,14 @@
 extends layout
 
 block content
-    h1 Logowanie
-    form(action="/users/login", method="POST")
-        .form-group
-            label Nazwa użytkownika:
-            input.form-control(name="username", type="text")
-        .form-group
-            label Hasło:
-            input.form-control(name="password", type="password")
-        input.btn.btn-submit(type="submit", value="Zaloguj")
+    div.main-part.pageTitle
+        h1.pageTitle Logowanie
+    .main-part.subPage
+        form(action="/users/login", method="POST")
+            .form-group
+                label Nazwa użytkownika:
+                input.form-control(name="username", type="text")
+            .form-group
+                label Hasło:
+                input.form-control(name="password", type="password")
+            input.btn.btn-submit(type="submit", value="Zaloguj")

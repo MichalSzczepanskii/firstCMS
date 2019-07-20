@@ -1,18 +1,20 @@
 extends layout
 
 block content
-    h1 Rejestracja
-    form(action="/users/register", method="POST")
-        .form-group
-            label Nazwa użytkownika:
-            input.form-control(name="username", type="text")
-        .form-group
-            label Email:
-            input.form-control(name="email", type="text")
-        .form-group
-            label Hasło:
-            input.form-control(name="password", type="password")
-        .form-group
-            label Powtórz hasło:
-            input.form-control(name="password2", type="password")
-        input.btn.btn-submit(type="submit", value="Zarejestruj")
+    div.main-part.pageTitle
+        h1.pageTitle Rejestracja
+    .main-part.subPage
+        form(action="/users/register", method="POST")
+            .form-group
+                label Nazwa użytkownika:
+                input.form-control(name="username", type="text")
+            .form-group
+                label Email:
+                input.form-control(name="email", type="text")
+            .form-group
+                label Hasło:
+                input.form-control(name="password", type="password")
+            .form-group
+                label Powtórz hasło:
+                input.form-control(name="password2", type="password")
+            input.btn.btn-submit(type="submit", value="Zarejestruj")

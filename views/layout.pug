@@ -2,31 +2,32 @@ doctype html
 html
     head(lang='pl')
         title First
+        link(href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto:400,500,700|Open+Sans:400,500,700&display=swap' rel='stylesheet')
         link(rel='stylesheet' href='/css/style.css')
     body
-        nav.navbar
-            .container
-                a.navtitle(href='/') First
-                a.navlink(href='/') Strona główna
-                if user
-                    if user.type!='user'
-                        a.navlink(href='/articles/add') Dodaj artykuł
-                
-                
-                .navlink-right
+        .container
+            header
+                .logo First
+                .sublogo Testowy CMS'ik
+                nav.navbar
+                    a.navlink.nav-left(href='/') Strona główna
                     if user
-                        form(action='/users/logout', method='POST')
-                            input.navlink-btn(type='submit', value='Wyloguj')
-                    else
-                        a.navlink(href='/users/login') Logowanie
-                        a.navlink(href='/users/register') Rejestracja
+                        if user.type!='user'
+                            a.navlink(href='/articles/add') Dodaj artykuł
+                    span.nav-right
+                        if user
+                            form(action='/users/logout', method='POST')
+                                input.navlink(type='submit', value='Wyloguj')
+                        else
+                            a.navlink(href='/users/login') Logowanie
+                            a.navlink(href='/users/register') Rejestracja
 
-        main.container-body
-            != messages('message', locals)
-            if errors
-                each error, i in errors
-                    div(class="alert alert-error") #{error.msg}
-            block content
-            footer
-                hr
-                p Copyright &copy; 2019
+            main
+                != messages('message', locals)
+                if errors
+                    each error, i in errors
+                        div(class="alert alert-error") #{error.msg}
+                block content
+                footer
+                    hr
+                    p Copyright &copy; 2019

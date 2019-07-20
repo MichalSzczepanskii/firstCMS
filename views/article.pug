@@ -1,27 +1,28 @@
 extends layout
-
 block content
+    -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
     article.home-article
-        h2.home-article-title #{article.title}
-        div.home-article-author Autor: 
-            a(href="/users/"+article.author) #{ucfirst(author)}
-        p.home-article-content #{article.content}
-        -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-        if allowEdit
-            div    
-                a.link-btn.btn-edit(href="/articles/edit/" + article._id) Edytuj
-        if logs
-            each log, i in logs
-                -var d = log.date.getDate()
-                -var m = monthName[log.date.getMonth()]
-                -var y = log.date.getFullYear()
-                div.articleLogs 
-                    span Artykuł edytowany przez: 
-                    a(href="/users/"+log.editorId)= ucfirst(log.editor[0])
-                    span  | Powód: #{log.reason}
-                    span  | #{d} #{m} #{y}
-        hr
+        div.main-part.pageTitle
+            h1.pageTitle #{article.title}
         -var d = article.date.getDate()
         -var m = monthName[article.date.getMonth()]
         -var y = article.date.getFullYear()
-        p.home-article-date Dodano: #{d} #{m} #{y}
+
+        div.main-part.subPage #{d} #{m} #{y} Przez: 
+            a(href="/users/"+article.author) #{ucfirst(author)}
+        div.main-part.subPage
+            p.home-article-content #{article.content}
+            if allowEdit
+                div    
+                    a.btn.btn-edit(href="/articles/edit/" + article._id) Edytuj
+        if logs
+            .main-part.logsSection
+                each log, i in logs
+                    -var d = log.date.getDate()
+                    -var m = monthName[log.date.getMonth()]
+                    -var y = log.date.getFullYear()
+                    div.articleLogs
+                        span Artykuł edytowany przez: 
+                            a(href="/users/"+log.editorId)= ucfirst(log.editor[0])
+                        span Powód: #{log.reason}
+                        span #{d} #{m} #{y}

@@ -1,17 +1,20 @@
 extends layout
 
 block content
-    h1 Strona główna
-    each article, i in articles
-        article.home-article
-            h2.home-article-title
-                a(href="/articles/"+article._id)= article.title
-            div.home-article-author Autor: 
-                a(href="/users/"+article.author_id) #{ucfirst(article.author[0])}
-            p.home-article-content #{article.short}...
-            -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-            -var d = article.date.getDate()
-            -var m = monthName[article.date.getMonth()]
-            -var y = article.date.getFullYear()
-            hr
-            p.home-article-date Dodano: #{d} #{m} #{y}
+    div.main-part.pageTitle
+        h1.pageTitle Strona główna
+    div.main-part.subPage
+        each article, i in articles
+            article.home-article
+                div.article-left
+                    -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
+                    -var d = article.date.getDate()
+                    -var m = monthName[article.date.getMonth()]
+                    -var y = article.date.getFullYear()
+                    p.home-article-date #{d} #{m} #{y}
+                    div.home-article-author Przez: 
+                        a(href="/users/"+article.author_id) #{ucfirst(article.author[0])}
+                div.article-right
+                    h2
+                        a.home-article-title(href="/articles/"+article._id)= article.title
+                    p.home-article-content #{article.short}... 
