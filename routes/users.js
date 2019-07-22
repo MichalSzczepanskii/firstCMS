@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const mongoose = require('mongoose'); 
 
 //Setup validation
 const { check, validationResult } = require('express-validator');
 
 //User Model
 const User = require('../models/user');
+const Article = require('../models/article');
 
 
 //Display register form
@@ -94,5 +96,25 @@ router.post('/logout', (req, res, next) => {
     req.flash('success', 'Pomyślnie wylogowaneo.');
     res.redirect('/users/login');
 })
+
+//User profile
+router.get('/:id', (req, res, next) => {
+    User.findById(req.params.id, async(err, userP) => {
+        if (err){
+            console.log(err)
+            return;
+        }else{
+            let articles = '';
+            if(userP.type != 'user'){
+                let query = {
+                    author: mongoose.Types.ObjectId(req.params.id)
+                }
+                articles = await Article.countDocuments(query); 
+            }
+            console.log(articles);
+            res.render('profile',{userP, articles})
+        }
+    })
+});
 
 module.exports = router;

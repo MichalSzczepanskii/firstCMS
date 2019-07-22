@@ -1,0 +1,25 @@
+extends layout
+
+block content
+    .main-part.pageTitle
+        h1.pageTitle Profil użytkownika: #{ucfirst(userP.username)}
+    .main-part.subPage
+        .userInfo
+            -var typeTranslate = {'moderator': 'Moderator','admin': 'Administrator','user': 'Użytkownik','journalist':'Redaktor'}
+            -var type = typeTranslate[userP.type]
+            -var d = ('0' + userP.registerDate.getDate()).slice(-2)
+            -var m = ('0' + (userP.registerDate.getMonth() + 1)).slice(-2)
+            -var y = userP.registerDate.getFullYear()
+            .infoRow
+                span.info Rejestracja
+                span.value #{d}.#{m}.#{y}
+            .infoRow
+                span.info Ranga
+                span(class="value type-"+userP.type) #{type}
+            .infoRow
+                span.info Email 
+                span.value #{userP.email}
+            if articles != ''
+                .infoRow
+                    span.info Artykuły 
+                    span.value #{articles}

@@ -21,6 +21,10 @@ const UserSchema = mongoose.Schema({
     email:{
         type: String,
         require: true
+    },
+    registerDate:{
+        type: Date,
+        default: new Date
     }
 })
 

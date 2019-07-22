@@ -14,8 +14,9 @@ html
                     if user
                         if user.type!='user'
                             a.navlink(href='/articles/add') Dodaj artykuł
-                    span.nav-right
+                    div.nav-right
                         if user
+                            a.navlink(href='/users/'+user._id) Mój profil
                             form(action='/users/logout', method='POST')
                                 input.navlink(type='submit', value='Wyloguj')
                         else

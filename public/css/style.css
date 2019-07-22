@@ -402,8 +402,10 @@ a{
   margin: 0;
   height: 16px;
   line-height: 16px;
+  overflow: auto
 }
 .nav-right{
+  width: 290px;
   float: right;
 }
 .navlink:hover{
@@ -546,4 +548,39 @@ footer p
   color: #3c763d;
   background-color: #dff0d8;
   border-color: #d6e9c6;
+}
+
+.userInfo{
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
+  padding: 25px 15px
+}
+.infoRow{
+  margin-top: 10px;
+}
+.infoRow:first-child{
+  margin: 0;
+}
+.type-journalist,.type-admin,.type-moderator,.type-user{
+  font-weight: bold;
+}
+.type-journalist{
+  color: blue;
+}
+.type-admin{
+  color: red;
+}
+.type-moderator{
+  color: green;
+}
+.type-user{
+  color: black;
+}
+.userInfo span{
+  display: inline-block;
+  width: 100px;
+}
+.userInfo .info{
+  text-align: right;
+  padding-right: 10px;
 }
