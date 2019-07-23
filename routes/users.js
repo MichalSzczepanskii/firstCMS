@@ -10,6 +10,7 @@ const { check, validationResult } = require('express-validator');
 //User Model
 const User = require('../models/user');
 const Article = require('../models/article');
+const ArticleEditLog = require('../models/articleEditLog');
 
 
 //Display register form
@@ -104,15 +105,60 @@ router.get('/:id', (req, res, next) => {
             console.log(err)
             return;
         }else{
-            let articles = '';
+            redirect = {}
+            redirect.userP = userP;
             if(userP.type != 'user'){
                 let query = {
                     author: mongoose.Types.ObjectId(req.params.id)
                 }
-                articles = await Article.countDocuments(query); 
+                redirect.articles = await Article.countDocuments(query); 
             }
-            console.log(articles);
-            res.render('profile',{userP, articles})
+            if (req.user){
+                if (req.user._id == req.params.id || req.user.type == 'admin' || req.user.type == 'moderator'){
+                    redirect.logs = await ArticleEditLog.aggregate([
+                        {
+                            $match:{
+                                authorId: mongoose.Types.ObjectId(req.params.id)
+                            }
+                        }, 
+                        {
+                            $lookup:{
+                                from: 'users',
+                                localField: 'editedBy',
+                                foreignField: '_id',
+                                as: 'edit'
+                            }
+                        },
+                        {$unwind: "$edit"},
+                        {
+                            $lookup:{
+                                from: 'articles',
+                                localField: 'articleId',
+                                foreignField: '_id',
+                                as: 'article'
+                            }
+                        },
+                        {$unwind: "$article"},
+                        {
+                            $project:{
+                                editor: '$edit.username',
+                                editorId: "$editedBy",
+                                title: "$article.title",
+                                reason: 1,
+                                date: 1,
+                                articleId: 1
+                            }
+                        },
+                        {
+                            $sort: {
+                                _id: -1
+                            }
+                        }
+                    ]);
+                }
+            }
+            console.log(redirect);
+            res.render('profile',redirect);
         }
     })
 });

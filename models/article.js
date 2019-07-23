@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-
+var Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
 //User Schema
 const ArticleSchema = mongoose.Schema({
     title:{
@@ -7,7 +8,7 @@ const ArticleSchema = mongoose.Schema({
         required: true
     },
     author:{
-        type: String,
+        type: ObjectId,
         require: true
     },
     content:{

@@ -550,10 +550,29 @@ footer p
   border-color: #d6e9c6;
 }
 
-.userInfo{
-  border-top: 1px solid #eeeeee;
+.userInfo, .userLogs{
+  padding: 20px 15px
+}
+.userProfileTitle{
   border-bottom: 1px solid #eeeeee;
-  padding: 25px 15px
+  padding: 0px 0px 10px 10px;
+  font-size: 19px;
+}
+.userLogs .log span{
+  display: inline-block;
+  width: 24.89%;
+  height: 25px;
+  font-size: 15px;
+  color: grey;
+  line-height: 25px;
+  border-right: 1px solid #dadada;
+  text-align: center;
+}
+.userLogs .log span:last-child{
+  border-right: 0;
+}
+.userLogs .log:nth-child(even){
+  background-color: rgba(0,0,0,0.1);
 }
 .infoRow{
   margin-top: 10px;

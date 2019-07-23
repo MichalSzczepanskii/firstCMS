@@ -64,14 +64,7 @@ const User = require('./models/user');
 //Home route
 app.get('/',(req, res) => {
     Article.aggregate(
-      [{$project: 
-        {
-        "title": "$title", 
-        "author": {$toObjectId: "$author"},
-        "date": "$date" ,
-        "short": {$substr: ["$content", 0, 750]}
-        }
-      },
+      [
       {
         $lookup: {
           from: "users", 
@@ -80,13 +73,14 @@ app.get('/',(req, res) => {
           as: "user"
         }
       },
+      {$unwind: "$user"},
       {$project: 
         {
         "title": 1, 
         "author": "$user.username",
         "author_id": "$user._id",
         "date": 1 ,
-        "short": 1}
+        "short": {$substr: ["$content", 0, 750]}}
       },
       {$sort: {_id: -1}}
       ]

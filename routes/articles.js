@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongose = require('mongoose');
 
 //Setup validation
 const { check, validationResult } = require('express-validator');
@@ -54,29 +55,22 @@ router.get('/:id', async(req, res) => {
             let logs = await ArticleEditLog.aggregate([
                 {
                     $match:{
-                        articleId: req.params.id
+                        articleId: mongose.Types.ObjectId(req.params.id)
                     }
-                },
-                {
-                    $project:{
-                        editor: {$toObjectId: "$editedBy"},
-                        editorId: "$editedBy",
-                        reason: 1,
-                        date: 1
-                    }
-                },  
+                }, 
                 {
                     $lookup:{
                         from: 'users',
-                        localField: 'editor',
+                        localField: 'editedBy',
                         foreignField: '_id',
                         as: 'edit'
                     }
                 },
+                {$unwind: "$edit"},
                 {
                     $project:{
                         editor: '$edit.username',
-                        editorId: 1,
+                        editorId: "$editedBy",
                         reason: 1,
                         date: 1
                     }
@@ -128,6 +122,7 @@ router.post('/edit/:id',[
                     log.articleId = article._id;
                     log.author = article.author;
                     log.editedBy = req.user._id;
+                    log.authorId = articleAuthor._id;
                     log.reason = req.body.reason;
 
                     log.save((err)=>{

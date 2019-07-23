@@ -4,6 +4,8 @@ block content
     .main-part.pageTitle
         h1.pageTitle Profil użytkownika: #{ucfirst(userP.username)}
     .main-part.subPage
+        .userProfileTitle
+            h2 Informacje
         .userInfo
             -var typeTranslate = {'moderator': 'Moderator','admin': 'Administrator','user': 'Użytkownik','journalist':'Redaktor'}
             -var type = typeTranslate[userP.type]
@@ -23,3 +25,20 @@ block content
                 .infoRow
                     span.info Artykuły 
                     span.value #{articles}
+        .userLogs
+            if(typeof logs != 'undefined')
+                .userProfileTitle
+                     h2 Logi
+                each log, i in logs
+                    div(class='log')
+                        -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
+                        -var d = log.date.getDate()
+                        -var m = monthName[log.date.getMonth()]
+                        -var y = log.date.getFullYear()
+                        span #{d} #{m} #{y}
+                        span
+                            a(href='/articles/'+log.articleId)= log.title
+                        span
+                            a(href='/users/'+log.editorId)= ucfirst(log.editor)
+                        span= log.reason
+
