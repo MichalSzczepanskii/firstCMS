@@ -26,7 +26,7 @@ block content
                     span.info Artykuły 
                     span.value #{articles}
         .userLogs
-            if(typeof logs != 'undefined')
+            if(typeof logs != 'undefined' && logs!='')
                 .userProfileTitle
                      h2 Logi
                 each log, i in logs
