@@ -11,7 +11,7 @@ block content
         div.main-part.subPage #{d} #{m} #{y} Przez: 
             a(href="/users/"+article.author) #{ucfirst(author)}
         div.main-part.subPage
-            p.home-article-content #{article.content}
+            .home-article-content !{article.content}
             if allowEdit
                 div    
                     a.btn.btn-edit(href="/articles/edit/" + article._id) Edytuj
@@ -26,3 +26,5 @@ block content
                             a(href="/users/"+log.editorId)= ucfirst(log.editor)
                         span Powód: #{log.reason}
                         span #{d} #{m} #{y}
+
+    #disqus_thread

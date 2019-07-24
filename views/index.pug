@@ -12,9 +12,9 @@ block content
                     -var m = monthName[article.date.getMonth()]
                     -var y = article.date.getFullYear()
                     p.home-article-date #{d} #{m} #{y}
-                    div.home-article-author Przez: 
+                    p.home-article-author Przez: 
                         a(href="/users/"+article.author_id) #{ucfirst(article.author)}
                 div.article-right
                     h2
                         a.home-article-title(href="/articles/"+article._id)= article.title
-                    p.home-article-content #{article.short}... 
+                    .home-article-content !{article.short}... 
