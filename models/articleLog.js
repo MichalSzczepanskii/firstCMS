@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 //User Schema
-const ArticleEditLogSchema = mongoose.Schema({
+const ArticleLogSchema = mongoose.Schema({
     articleId:{
         type: ObjectId,
         required: true,
@@ -22,7 +22,15 @@ const ArticleEditLogSchema = mongoose.Schema({
     date:{
         type: Date,
         default: new Date()
+    },
+    action:{
+        type: String,
+        required: true
+    },
+    displayed:{
+        type: Boolean,
+        default: true
     }
 })
 
-const User = module.exports = mongoose.model('ArticleEditLog', ArticleEditLogSchema, 'articleEditLog');
+const User = module.exports = mongoose.model('ArticleLog', ArticleLogSchema, 'articleLogs');

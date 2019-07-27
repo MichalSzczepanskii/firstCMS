@@ -5,6 +5,7 @@ const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const methodOverride = require('method-override');
 
 const config = require('./config/database');
 
@@ -16,6 +17,9 @@ let db = mongoose.connection;
 
 db.once('open', () => console.log('Connected to MongoDB'));
 db.on('error', (err) => console.log(err));
+
+//MethodOverride middleware
+app.use(methodOverride('_method'))
 
 //View engine
 app.set('views', path.join(__dirname, 'views'));

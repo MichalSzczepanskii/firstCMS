@@ -15,6 +15,7 @@ block content
             if allowEdit
                 div    
                     a.btn.btn-edit(href="/articles/edit/" + article._id) Edytuj
+                    a.btn.btn-danger(href="/articles/delete/" + article._id) Usuń
         if logs
             .main-part.logsSection
                 each log, i in logs

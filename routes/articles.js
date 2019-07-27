@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const mongose = require('mongoose');
+const mongoose = require('mongoose');
 
 //Setup validation
 const { check, validationResult } = require('express-validator');
@@ -8,7 +8,7 @@ const { check, validationResult } = require('express-validator');
 //Article Model
 const Article = require('../models/article');
 const User = require('../models/user');
-const ArticleEditLog = require('../models/articleEditLog');
+const ArticleLog = require('../models/articleLog');
 
 //Displaying form for adding article
 router.get('/add',ensureAuthenticated, userDenied, (req, res) =>{
@@ -52,10 +52,10 @@ router.get('/:id', async(req, res) => {
     };
     if(req.user){
         if(ownByEditor(articleAuthor, req) || req.user.type=='admin' || req.user.type == 'moderator'){
-            let logs = await ArticleEditLog.aggregate([
+            let logs = await ArticleLog.aggregate([
                 {
                     $match:{
-                        articleId: mongose.Types.ObjectId(req.params.id)
+                        articleId: mongoose.Types.ObjectId(req.params.id)
                     }
                 }, 
                 {
@@ -118,12 +118,12 @@ router.post('/edit/:id',[
                     req.flash('error','Powód jest wymagany.');
                     res.redirect('/articles/edit/' + req.params.id);
                 }else{
-                    const log = new ArticleEditLog();
+                    const log = new ArticleLog();
                     log.articleId = article._id;
-                    log.author = article.author;
                     log.editedBy = req.user._id;
                     log.authorId = articleAuthor._id;
                     log.reason = req.body.reason;
+                    log.action = 'edit';
 
                     log.save((err)=>{
                         if(err){
@@ -146,6 +146,52 @@ router.post('/edit/:id',[
         }
     }  
 });
+
+router.get('/delete/:id',ensureAuthenticated, userDenied, async(req, res) => {
+    const {articleAuthor} = await articleAndUserById(req.params.id);
+    if(req.user._id.toString() == articleAuthor._id.toString()) res.render('confirmDelete',{id: req.params.id})
+    else if(req.user.type == 'admin' || req.user.type == 'moderator'){
+         if(!doNotOverideAdmin(req,res, articleAuthor)){
+             res.render('reasonDelete', {id: req.params.id, articleAuthor})
+         }
+    }
+});
+
+router.delete('/delete/:id', ensureAuthenticated, userDenied, async(req, res) => {
+    const {article, articleAuthor} = await articleAndUserById(req.params.id);
+    if(typeof req.body.reason !== "undefined"){
+        const log = new ArticleLog();
+                    log.articleId = article._id;
+                    log.editedBy = req.user._id;
+                    log.authorId = articleAuthor._id;
+                    log.reason = req.body.reason;
+                    log.action = 'delete';
+
+                    log.save((err)=>{
+                        if(err){
+                            console.log(err);
+                            return;
+                        }
+                    });
+    }
+    Article.deleteOne({_id: mongoose.Types.ObjectId(req.params.id)}, (err)=>{
+        if (err){
+            console.log(err);
+            return;
+        }else{
+            ArticleLog.updateMany({articleId: mongoose.Types.ObjectId(req.params.id)},{$set: {displayed: false}}, (err)=>{
+                if(err){
+                    console.log(err);
+                    return;
+                }else{
+                    req.flash('success', 'Pomyślnie usunięto artykuł');
+                    res.redirect('/');
+                }
+            });
+            
+        }
+    })
+})
 
 //Check if user has permission to edit
 function allowEdit(articleAuthor, req){

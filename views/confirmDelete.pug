@@ -1,0 +1,9 @@
+extends layout
+block content
+    div.main-part.pageTitle
+        h1.pageTitle Czy na pewno chcesz usunąć artykuł?
+
+    div.main-part.subPage
+        a.btn.btn-edit(href = '/articles/edit/'+id) Nie
+        form#deleteForm(method="POST" action="/articles/delete/"+id+"?_method=DELETE")
+            input.btn.btn-danger(type="submit" value='Tak')

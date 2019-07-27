@@ -10,7 +10,7 @@ const { check, validationResult } = require('express-validator');
 //User Model
 const User = require('../models/user');
 const Article = require('../models/article');
-const ArticleEditLog = require('../models/articleEditLog');
+const ArticleLog = require('../models/articleLog');
 
 
 //Display register form
@@ -114,8 +114,8 @@ router.get('/:id', (req, res, next) => {
                 redirect.articles = await Article.countDocuments(query); 
             }
             if (req.user){
-                if (req.user._id == req.params.id || req.user.type == 'admin' || req.user.type == 'moderator'){
-                    redirect.logs = await ArticleEditLog.aggregate([
+                if (req.user._id.toString() == req.params.id || req.user.type == 'admin' || req.user.type == 'moderator'){
+                    redirect.logs = await ArticleLog.aggregate([
                         {
                             $match:{
                                 authorId: mongoose.Types.ObjectId(req.params.id)
@@ -157,7 +157,6 @@ router.get('/:id', (req, res, next) => {
                     ]);
                 }
             }
-            console.log(redirect);
             res.render('profile',redirect);
         }
     })

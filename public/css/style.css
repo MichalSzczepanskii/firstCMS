@@ -481,14 +481,25 @@ footer p
   border: 0;
   border-radius: 4px;
   background-color: transparent;
-  margin: 10px 0px;
+  margin: 15px 5px;
   text-decoration: none;
   color: white;
   font-size: 16px;
+  cursor: pointer;
+}
+.btn:first-of-type{
+  margin-left: 0;
 }
 .btn-edit{
   background-color: #59b5e0;
   border: 1px solid #2c596e;
+}
+.btn-danger{
+  background-color: #f33737;
+  border: 1px solid rgb(43, 3, 10);
+}
+.btn-danger:hover{
+  background-color: #a52f2f;
 }
 .btn-edit:hover{
   background-color: #3d7d9b;
@@ -500,7 +511,6 @@ footer p
 .btn-submit:hover{
   background-color: #a73642;
 }
-
 .home-article-content{
   white-space: pre-line;
 }
@@ -592,4 +602,8 @@ footer p
 .userInfo .info{
   text-align: right;
   padding-right: 10px;
+}
+#deleteForm{
+  margin-left: 10px;
+  display: inline-block;
 }

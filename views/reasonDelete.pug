@@ -1,0 +1,11 @@
+extends layout
+block content
+    div.main-part.pageTitle
+        h1.pageTitle Czy na pewno chcesz usunąć artykuł użytkownika #{ucfirst(articleAuthor.username)}?
+    div.main-part.subPage
+        form(method="POST" action="/articles/delete/"+id+"?_method=DELETE")
+            .form-group
+                label Powód edycji:
+                input.form-control(name="reason", type="text")
+                a.btn.btn-edit(href = '/articles/edit/'+id) Nie
+                input.btn.btn-danger(type="submit" value='Tak')
