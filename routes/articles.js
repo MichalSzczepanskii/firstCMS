@@ -51,7 +51,7 @@ router.get('/:id', async(req, res) => {
         allowEdit: allowEdit(articleAuthor, req)
     };
     if(req.user){
-        if(ownByEditor(articleAuthor, req) || req.user.type=='admin' || req.user.type == 'moderator'){
+        if((ownByEditor(articleAuthor, req) && article.displayed) || (req.user.type=='admin' || req.user.type == 'moderator')){
             let logs = await ArticleLog.aggregate([
                 {
                     $match:{
@@ -83,9 +83,14 @@ router.get('/:id', async(req, res) => {
             ]);
             redirect.logs = logs;
         }
+
+        if((article.displayed) || ((req.user.type == 'admin' || req.user.type == 'moderator')&&(!article.displayed))) res.render('article', redirect);
+        else res.redirect('/');   
+    }else{
+        if(article.displayed) res.render('article', redirect)
+        else res.redirect('/');
     }    
-    res.render('article', redirect);
-                
+            
 });
 
 //Display edit form
@@ -174,12 +179,12 @@ router.delete('/delete/:id', ensureAuthenticated, userDenied, async(req, res) =>
                         }
                     });
     }
-    Article.deleteOne({_id: mongoose.Types.ObjectId(req.params.id)}, (err)=>{
+    Article.update({_id: mongoose.Types.ObjectId(req.params.id)},{$set: {displayed: false}}, (err)=>{
         if (err){
             console.log(err);
             return;
         }else{
-            ArticleLog.updateMany({articleId: mongoose.Types.ObjectId(req.params.id)},{$set: {displayed: false}}, (err)=>{
+            ArticleLog.updateMany({$and:[{articleId: mongoose.Types.ObjectId(req.params.id)},{action: "edit"}]},{$set: {displayed: false}}, (err)=>{
                 if(err){
                     console.log(err);
                     return;

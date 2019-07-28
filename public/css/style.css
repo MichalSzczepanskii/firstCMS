@@ -558,9 +558,9 @@ footer p
   padding: 0px 0px 10px 10px;
   font-size: 19px;
 }
-.userLogs .log span{
+.userLogs .log span, .logHead span{
   display: inline-block;
-  width: 24.89%;
+  width: 19.89%;
   height: 25px;
   font-size: 15px;
   color: grey;
@@ -572,7 +572,12 @@ footer p
   border-right: 0;
 }
 .userLogs .log:nth-child(even){
-  background-color: rgba(0,0,0,0.1);
+  background-color: #c7435011;
+}
+.userLogs .logHead span{
+  color: white;
+  font-weight: bold;
+  background-color: #c74350;
 }
 .infoRow{
   margin-top: 10px;
@@ -606,4 +611,7 @@ footer p
 #deleteForm{
   margin-left: 10px;
   display: inline-block;
+}
+.btn-right{
+  float: right;
 }

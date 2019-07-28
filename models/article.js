@@ -18,6 +18,10 @@ const ArticleSchema = mongoose.Schema({
     date:{
         type: Date,
         default: new Date()
+    },
+    displayed:{
+        type: Boolean,
+        default: true
     }
 })
 

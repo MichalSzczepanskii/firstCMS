@@ -7,6 +7,8 @@ block content
         .userProfileTitle
             h2 Informacje
         .userInfo
+            if allowEdit
+                a.btn.btn-edit.btn-right(href="/edit/"+userP._id) Edytuj
             -var typeTranslate = {'moderator': 'Moderator','admin': 'Administrator','user': 'Użytkownik','journalist':'Redaktor'}
             -var type = typeTranslate[userP.type]
             -var d = ('0' + userP.registerDate.getDate()).slice(-2)
@@ -28,17 +30,27 @@ block content
         .userLogs
             if(typeof logs != 'undefined' && logs!='')
                 .userProfileTitle
-                     h2 Logi
+                    h2 Logi
+                div(class='logHead')
+                    span Data
+                    span Artykuł
+                    span Autor logu
+                    span Powód
+                    span Akcja
                 each log, i in logs
-                    div(class='log')
-                        -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-                        -var d = log.date.getDate()
-                        -var m = monthName[log.date.getMonth()]
-                        -var y = log.date.getFullYear()
-                        span #{d} #{m} #{y}
-                        span
-                            a(href='/articles/'+log.articleId)= log.title
-                        span
-                            a(href='/users/'+log.editorId)= ucfirst(log.editor)
-                        span= log.reason
+                    if log.displayed
+                        div(class='log')
+                            -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
+                            -var d = log.date.getDate()
+                            -var m = monthName[log.date.getMonth()]
+                            -var y = log.date.getFullYear()
+                            -var actionTranslate = {'edit':'Edycja','delete':'Usunięcie'}
+                            -var action = actionTranslate[log.action]
+                            span #{d} #{m} #{y}
+                            span
+                                a(href='/articles/'+log.articleId)= log.title
+                            span
+                                a(href='/users/'+log.editorId)= ucfirst(log.editor)
+                            span= log.reason
+                            span= action
 

@@ -107,6 +107,13 @@ router.get('/:id', (req, res, next) => {
         }else{
             redirect = {}
             redirect.userP = userP;
+            redirect.allowEdit = false;
+            redirect.superEdit = false;
+            if(req.user){
+                if(userP._id.toString() == req.user._id.toString() || req.user.type == 'admin' || req.user.type =='moderator'){
+                    redirect.allowEdit = true;
+                }
+            }
             if(userP.type != 'user'){
                 let query = {
                     author: mongoose.Types.ObjectId(req.params.id)
@@ -146,7 +153,9 @@ router.get('/:id', (req, res, next) => {
                                 title: "$article.title",
                                 reason: 1,
                                 date: 1,
-                                articleId: 1
+                                articleId: 1,
+                                action: 1,
+                                displayed: 1
                             }
                         },
                         {

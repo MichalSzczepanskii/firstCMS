@@ -83,6 +83,7 @@ app.get('/',(req, res) => {
         "title": 1, 
         "author": "$user.username",
         "author_id": "$user._id",
+        "displayed": 1,
         "date": 1 ,
         "short": {$substr: ["$content", 0, 750]}}
       },
