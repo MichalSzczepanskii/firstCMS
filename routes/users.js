@@ -171,4 +171,34 @@ router.get('/:id', (req, res, next) => {
     })
 });
 
+//edit user profile
+router.get('/edit/:id',ensureAuthenticated, (req, res) => {
+    User.findById(req.params.id, async(err, userP) => {
+        if (err){
+            console.log(err)
+            return;
+        }else{
+            redirect = {}
+            redirect.userP = userP;
+            redirect.superEdit = false;
+            if (req.user){
+                if (req.user.type == 'admin'){
+                    redirect.superEdit = true;
+                }
+            }
+            res.render('edit_profile', redirect);
+        }
+    })
+    
+})
+
+function ensureAuthenticated(req, res, next){
+    if(req.isAuthenticated()){
+        return next();
+    }else{
+        req.flash('error', 'Brak dostępu.');
+        res.redirect('/');
+    }
+}
+
 module.exports = router;

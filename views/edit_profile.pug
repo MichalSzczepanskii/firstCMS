@@ -1,0 +1,32 @@
+extends layout
+
+block content
+    .main-part.pageTitle
+        h1.pageTitle Edycja profilu użytkownika: #{ucfirst(userP.username)}
+    .main-part.subPage
+        .userProfileTitle
+            h2 Informacje
+        .userInfo
+            if allowEdit
+                a.btn.btn-edit.btn-right(href="/edit/"+userP._id) Edytuj
+            -var typeTranslate = {'moderator': 'Moderator','admin': 'Administrator','user': 'Użytkownik','journalist':'Redaktor'}
+            -var type = typeTranslate[userP.type]
+            -var d = ('0' + userP.registerDate.getDate()).slice(-2)
+            -var m = ('0' + (userP.registerDate.getMonth() + 1)).slice(-2)
+            -var y = userP.registerDate.getFullYear()
+            form(action='/users/edit'+userP._id method='POST')
+                .infoRow
+                    span.info Rejestracja
+                    span.value #{d}.#{m}.#{y}
+                .infoRow
+                    span.info Ranga
+                    if superEdit
+                        span.value 
+                            input(type='text' value =type)
+                    else
+                        span(class="value type-"+userP.type) #{type}
+                .infoRow
+                    span.info Email 
+                    span.value 
+                        input(type='text' value =userP.email)
+                input.btn.btn-edit.btn-right(type='submit' value='Edytuj')
