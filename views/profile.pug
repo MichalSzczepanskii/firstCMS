@@ -23,7 +23,7 @@ block content
             .infoRow
                 span.info Email 
                 span.value #{userP.email}
-            if articles != ''
+            if typeof articles != 'undefined'
                 .infoRow
                     span.info Artykuły 
                     span.value #{articles}

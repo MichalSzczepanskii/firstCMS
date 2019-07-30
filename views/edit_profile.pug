@@ -14,7 +14,7 @@ block content
             -var d = ('0' + userP.registerDate.getDate()).slice(-2)
             -var m = ('0' + (userP.registerDate.getMonth() + 1)).slice(-2)
             -var y = userP.registerDate.getFullYear()
-            form(action='/users/edit'+userP._id method='POST')
+            form(action='/users/edit/'+userP._id method='POST')
                 .infoRow
                     span.info Rejestracja
                     span.value #{d}.#{m}.#{y}
@@ -22,11 +22,11 @@ block content
                     span.info Ranga
                     if superEdit
                         span.value 
-                            input(type='text' value =type)
+                            input(type='text' name='type' value =type)
                     else
                         span(class="value type-"+userP.type) #{type}
                 .infoRow
                     span.info Email 
                     span.value 
-                        input(type='text' value =userP.email)
+                        input(type='text' name='email' value =userP.email)
                 input.btn.btn-edit.btn-right(type='submit' value='Edytuj')

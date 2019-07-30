@@ -113,6 +113,9 @@ router.get('/:id', (req, res, next) => {
                 if(userP._id.toString() == req.user._id.toString() || req.user.type == 'admin' || req.user.type =='moderator'){
                     redirect.allowEdit = true;
                 }
+                if(userP.type=='admin' && userP._id.toString() != req.user.id.toString()){
+                    redirect.allowEdit = false;
+                }
             }
             if(userP.type != 'user'){
                 let query = {
@@ -172,7 +175,7 @@ router.get('/:id', (req, res, next) => {
 });
 
 //edit user profile
-router.get('/edit/:id',ensureAuthenticated, (req, res) => {
+router.get('/edit/:id',ensureAuthenticated,editAccess, async(req, res) => {
     User.findById(req.params.id, async(err, userP) => {
         if (err){
             console.log(err)
@@ -189,8 +192,55 @@ router.get('/edit/:id',ensureAuthenticated, (req, res) => {
             res.render('edit_profile', redirect);
         }
     })
-    
 })
+
+router.post('/edit/:id', ensureAuthenticated, editAccess, async(req, res) => {
+        let updateQuery = ''
+        if (typeof req.body.type != 'undefined'){
+            const typeTranslated = {
+                'administrator': 'admin',
+                'moderator':'moderator',
+                'redaktor': 'journalist',
+                'użytkownik': 'user'
+            }
+            const type = typeTranslated[req.body.type.toLowerCase()];
+            const typeList = ['admin', 'moderator', 'journalist', 'user'];
+            if (typeList.includes(type)){
+                updateQuery = {$set: {email: req.body.email, type: type}}; 
+            }else{
+                updateQuery = {$set: {email: req.body.email}}; 
+            }  
+        }else{
+            updateQuery = {$set: {email: req.body.email}};
+        }
+        User.updateOne({_id: mongoose.Types.ObjectId(req.params.id)},updateQuery, (err) =>{
+            if(err){
+                console.log(err);
+                return;
+            }else{
+                req.flash('success', 'Pomyślnie edytowano profil.');
+                res.redirect('/users/edit/'+req.params.id);
+            }
+        })
+})
+
+//Protection that not allow moderator to overide admin
+async function editAccess(req, res, next){
+    const userInfo = await User.findOne({_id: mongoose.Types.ObjectId(req.params.id)});
+    if (req.user.type=='admin' || req.user.type == 'moderator'){
+        if (userInfo.type=='admin' && (userInfo._id.toString() != req.user.id.toString())){
+            req.flash('error','Brak dostępu.');
+            res.redirect('/');
+            return false;
+        }else{
+            return next();
+        }
+    }else{
+        req.flash('error','Brak dostępu.');
+        res.redirect('/');
+        return false;   
+    }
+}
 
 function ensureAuthenticated(req, res, next){
     if(req.isAuthenticated()){
