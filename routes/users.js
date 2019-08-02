@@ -11,6 +11,7 @@ const { check, validationResult } = require('express-validator');
 const User = require('../models/user');
 const Article = require('../models/article');
 const ArticleLog = require('../models/articleLog');
+const Rank = require('../models/rank');
 
 
 //Display register form
@@ -99,32 +100,40 @@ router.post('/logout', (req, res, next) => {
 })
 
 //User profile
-router.get('/:id', (req, res, next) => {
+router.get('/:id', async(req, res, next) => {
     User.findById(req.params.id, async(err, userP) => {
         if (err){
             console.log(err)
             return;
         }else{
+            const rank = await Rank.findById(req.user.type);
+            const userRank = await Rank.findById(userP.type);
+            const translatedRanks = {
+                'admin': 'Administrator',
+                'moderator':'Moderator',
+                'journalist': 'Redaktor',
+                'user': 'Użytkownik'
+            }
             redirect = {}
+            redirect.userRank = translatedRanks[userRank.name]
+            redirect.userRankStyle = userRank.name
             redirect.userP = userP;
             redirect.allowEdit = false;
-            redirect.superEdit = false;
-            if(req.user){
-                if(userP._id.toString() == req.user._id.toString() || req.user.type == 'admin' || req.user.type =='moderator'){
-                    redirect.allowEdit = true;
-                }
-                if(userP.type=='admin' && userP._id.toString() != req.user.id.toString()){
-                    redirect.allowEdit = false;
-                }
-            }
-            if(userP.type != 'user'){
+            if(userRank.addArticle){
                 let query = {
                     author: mongoose.Types.ObjectId(req.params.id)
                 }
                 redirect.articles = await Article.countDocuments(query); 
             }
             if (req.user){
-                if (req.user._id.toString() == req.params.id || req.user.type == 'admin' || req.user.type == 'moderator'){
+                if(userP._id.toString() == req.user._id.toString() || rank.editUser){
+                    redirect.allowEdit = true;
+                }
+                if(userP.type=='5d430adcb6d4219b1d458939' && userP._id.toString() != req.user.id.toString()){//admin
+                    redirect.allowEdit = false;
+                }
+
+                if (req.user._id.toString() == req.params.id || rank.editUser){
                     redirect.logs = await ArticleLog.aggregate([
                         {
                             $match:{
@@ -181,14 +190,17 @@ router.get('/edit/:id',ensureAuthenticated,editAccess, async(req, res) => {
             console.log(err)
             return;
         }else{
+            const rank = await Rank.findById(req.user.type);
             redirect = {}
-            redirect.userP = userP;
-            redirect.superEdit = false;
-            if (req.user){
-                if (req.user.type == 'admin'){
-                    redirect.superEdit = true;
-                }
+            redirect.translatedRanks = {
+                'admin': 'Administrator',
+                'moderator':'Moderator',
+                'journalist': 'Redaktor',
+                'user': 'Użytkownik'
             }
+            redirect.ranks = await Rank.find({},{name: 1})
+            redirect.userP = userP;
+            redirect.superEdit = rank.editRank;
             res.render('edit_profile', redirect);
         }
     })
@@ -197,16 +209,10 @@ router.get('/edit/:id',ensureAuthenticated,editAccess, async(req, res) => {
 router.post('/edit/:id', ensureAuthenticated, editAccess, async(req, res) => {
         let updateQuery = ''
         if (typeof req.body.type != 'undefined'){
-            const typeTranslated = {
-                'administrator': 'admin',
-                'moderator':'moderator',
-                'redaktor': 'journalist',
-                'użytkownik': 'user'
-            }
-            const type = typeTranslated[req.body.type.toLowerCase()];
-            const typeList = ['admin', 'moderator', 'journalist', 'user'];
-            if (typeList.includes(type)){
-                updateQuery = {$set: {email: req.body.email, type: type}}; 
+            const ranks = await Rank.find({},{_id: 1})
+            let rankList = ranks.map((x) => x._id.toString());
+            if (rankList.includes(req.body.type.toString())){
+                updateQuery = {$set: {email: req.body.email, type: req.body.type}}; 
             }else{
                 updateQuery = {$set: {email: req.body.email}}; 
             }  
@@ -224,23 +230,17 @@ router.post('/edit/:id', ensureAuthenticated, editAccess, async(req, res) => {
         })
 })
 
-//Protection that not allow moderator to overide admin
+
 async function editAccess(req, res, next){
-    const userInfo = await User.findOne({_id: mongoose.Types.ObjectId(req.params.id)});
-    if (req.user.type=='admin' || req.user.type == 'moderator'){
-        if (userInfo.type=='admin' && (userInfo._id.toString() != req.user.id.toString())){
-            req.flash('error','Brak dostępu.');
-            res.redirect('/');
-            return false;
-        }else{
-            return next();
-        }
+    const rank = await Rank.findById(req.user.type);
+    if (rank.editUser || req.params.id == req.user._id.toString()){
+        return next();
     }else{
-        req.flash('error','Brak dostępu.');
+        req.flash('error', 'Brak dostępu.');
         res.redirect('/');
-        return false;   
     }
 }
+
 
 function ensureAuthenticated(req, res, next){
     if(req.isAuthenticated()){

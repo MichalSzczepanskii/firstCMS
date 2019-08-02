@@ -9,9 +9,10 @@ const { check, validationResult } = require('express-validator');
 const Article = require('../models/article');
 const User = require('../models/user');
 const ArticleLog = require('../models/articleLog');
+const Rank = require('../models/rank');
 
 //Displaying form for adding article
-router.get('/add',ensureAuthenticated, userDenied, (req, res) =>{
+router.get('/add',ensureAuthenticated, addArtAccess, (req, res) =>{
     res.render('add_article.pug');
 })
 
@@ -19,7 +20,7 @@ router.get('/add',ensureAuthenticated, userDenied, (req, res) =>{
 router.post('/add',[
     check('title','Tytuł jest wymagany.').not().isEmpty(),
     check('content','Treść jest wymagana.').not().isEmpty()
-],(req, res) => {
+],ensureAuthenticated, addArtAccess, (req, res) => {
     let errors = validationResult(req);
     if(!errors.isEmpty()){
         res.render('add_article',{
@@ -51,7 +52,8 @@ router.get('/:id', async(req, res) => {
         allowEdit: allowEdit(articleAuthor, req)
     };
     if(req.user){
-        if((ownByEditor(articleAuthor, req) && article.displayed) || (req.user.type=='admin' || req.user.type == 'moderator')){
+        const rank = await Rank.findById(req.user.type);
+        if((ownByEditor(articleAuthor, req) && article.displayed) || (rank.editArticle)){
             let logs = await ArticleLog.aggregate([
                 {
                     $match:{
@@ -84,7 +86,7 @@ router.get('/:id', async(req, res) => {
             redirect.logs = logs;
         }
 
-        if((article.displayed) || ((req.user.type == 'admin' || req.user.type == 'moderator')&&(!article.displayed))) res.render('article', redirect);
+        if(article.displayed || rank.editArticle) res.render('article', redirect);
         else res.redirect('/');   
     }else{
         if(article.displayed) res.render('article', redirect)
@@ -94,7 +96,7 @@ router.get('/:id', async(req, res) => {
 });
 
 //Display edit form
-router.get('/edit/:id', ensureAuthenticated, userDenied, async (req, res) => {
+router.get('/edit/:id', ensureAuthenticated, editAccess, async (req, res) => {
     const {article, articleAuthor} = await articleAndUserById(req.params.id)
     if(!doNotOverideAdmin(req, res, articleAuthor)){
         res.render('edit_article',{
@@ -109,7 +111,7 @@ router.get('/edit/:id', ensureAuthenticated, userDenied, async (req, res) => {
 router.post('/edit/:id',[
     check('title','Tytuł jest wymagany.').not().isEmpty(),
     check('content','Treść jest wymagana.').not().isEmpty()
-], ensureAuthenticated, userDenied, async (req, res) => {
+], ensureAuthenticated, editAccess, async (req, res) => {
     const {article, articleAuthor} = await articleAndUserById(req.params.id);
     if(!doNotOverideAdmin(req, res, articleAuthor)){
         let errors = validationResult(req);
@@ -152,17 +154,18 @@ router.post('/edit/:id',[
     }  
 });
 
-router.get('/delete/:id',ensureAuthenticated, userDenied, async(req, res) => {
+router.get('/delete/:id',ensureAuthenticated, editAccess, async(req, res) => {
     const {articleAuthor} = await articleAndUserById(req.params.id);
+    const rank = await Rank.findById(req.user.type);
     if(req.user._id.toString() == articleAuthor._id.toString()) res.render('confirmDelete',{id: req.params.id})
-    else if(req.user.type == 'admin' || req.user.type == 'moderator'){
+    else if(rank.editArticle){
          if(!doNotOverideAdmin(req,res, articleAuthor)){
              res.render('reasonDelete', {id: req.params.id, articleAuthor})
          }
     }
 });
 
-router.delete('/delete/:id', ensureAuthenticated, userDenied, async(req, res) => {
+router.delete('/delete/:id', ensureAuthenticated, editAccess, async(req, res) => {
     const {article, articleAuthor} = await articleAndUserById(req.params.id);
     if(typeof req.body.reason !== "undefined"){
         const log = new ArticleLog();
@@ -199,11 +202,12 @@ router.delete('/delete/:id', ensureAuthenticated, userDenied, async(req, res) =>
 })
 
 //Check if user has permission to edit
-function allowEdit(articleAuthor, req){
+async function allowEdit(articleAuthor, req){
     if (req.user)
     {
-        if (req.user.id.toString() == articleAuthor.id.toString() || req.user.type == 'admin' || req.user.type =='moderator'){
-            if (articleAuthor.type == 'admin' && req.user.type=='moderator') return false;
+        const rank = await Rank.findById(req.user.type);
+        if (req.user.id.toString() == articleAuthor.id.toString() || rank.editArticle){
+            if (articleAuthor.type == '5d430adcb6d4219b1d458939') return false;//admin
             else return true
 
         }else return false;
@@ -230,20 +234,29 @@ async function articleAndUserById(id){
 
 //Protection that not allow moderator to overide admin
 function doNotOverideAdmin(req, res, articleAuthor){
-    if (req.user.type != 'admin' && articleAuthor.type == 'admin'){
+    if (req.user.type != '5d430adcb6d4219b1d458939' && articleAuthor.type == '5d430adcb6d4219b1d458939'){//admin
         req.flash('error','Brak dostępu.');
         res.redirect('/');
         return true;
     }
 }
-
-//Take access from usual user
-function userDenied(req, res, next){
-    if (req.user.type == 'user'){
+async function addArtAccess(req, res, next){
+    const rank = await Rank.findById(req.user.type);
+    if (rank.addArticle){
+        return next();
+    }else{
         req.flash('error', 'Brak dostępu.');
         res.redirect('/');
-    }else{
+    }
+}
+
+async function editAccess(req, res, next){
+    const rank = await Rank.findById(req.user.type);
+    if (rank.editArticle){
         return next();
+    }else{
+        req.flash('error', 'Brak dostępu.');
+        res.redirect('/');
     }
 }
 

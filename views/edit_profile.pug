@@ -22,11 +22,18 @@ block content
                     span.info Ranga
                     if superEdit
                         span.value 
-                            input(type='text' name='type' value =type)
+                            select(name='type')
+                                each rank, i in ranks
+                                    if rank._id.toString() == userP.type.toString()
+                                        option(value=rank._id selected='selected')= translatedRanks[rank.name]
+                                    else
+                                        option(value=rank._id)= translatedRanks[rank.name]
                     else
                         span(class="value type-"+userP.type) #{type}
                 .infoRow
                     span.info Email 
                     span.value 
                         input(type='text' name='email' value =userP.email)
-                input.btn.btn-edit.btn-right(type='submit' value='Edytuj')
+                .btn-right
+                    input.btn.btn-edit(type='submit' value='Edytuj')
+                    a.btn.btn-submit(href="/users/"+userP._id) Wróć

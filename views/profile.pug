@@ -9,8 +9,6 @@ block content
         .userInfo
             if allowEdit
                 a.btn.btn-edit.btn-right(href="/users/edit/"+userP._id) Edytuj
-            -var typeTranslate = {'moderator': 'Moderator','admin': 'Administrator','user': 'Użytkownik','journalist':'Redaktor'}
-            -var type = typeTranslate[userP.type]
             -var d = ('0' + userP.registerDate.getDate()).slice(-2)
             -var m = ('0' + (userP.registerDate.getMonth() + 1)).slice(-2)
             -var y = userP.registerDate.getFullYear()
@@ -19,7 +17,7 @@ block content
                 span.value #{d}.#{m}.#{y}
             .infoRow
                 span.info Ranga
-                span(class="value type-"+userP.type) #{type}
+                span(class="value type-"+userRankStyle) #{userRank}
             .infoRow
                 span.info Email 
                 span.value #{userP.email}
