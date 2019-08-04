@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    .main-part.pageTitle
+        h1.pageTitle Artykuły: #{ucfirst(user.username)}
+    .main-part.subPage
+        .userArticles
+            div(class='articleHead')
+                span Data
+                span.title Tytuł
+            each article, i in articles
+                if article.displayed
+                    div(class='article')
+                        -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
+                        -var d = article.date.getDate()
+                        -var m = monthName[article.date.getMonth()]
+                        -var y = article.date.getFullYear()
+                        span #{d} #{m} #{y}
+                        span.title
+                            a(href='/articles/'+article._id)= article.title
+

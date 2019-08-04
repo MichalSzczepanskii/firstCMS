@@ -201,6 +201,12 @@ router.delete('/delete/:id', ensureAuthenticated, editAccess, async(req, res) =>
     })
 })
 
+router.get('/user/:id', async(req, res)=>{
+    const articles = await Article.find({author: mongoose.Types.ObjectId(req.params.id)});
+    const user = await User.findById(mongoose.Types.ObjectId(req.params.id));
+    res.render('article_list',{articles, user});
+});
+
 //Check if user has permission to edit
 async function allowEdit(articleAuthor, req){
     if (req.user)

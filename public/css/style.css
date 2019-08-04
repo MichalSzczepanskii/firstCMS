@@ -550,7 +550,7 @@ footer p
   border-color: #d6e9c6;
 }
 
-.userInfo, .userLogs{
+.userInfo, .userLogs, .userArticles{
   padding: 20px 15px
 }
 .userProfileTitle{
@@ -558,7 +558,7 @@ footer p
   padding: 0px 0px 10px 10px;
   font-size: 19px;
 }
-.userLogs .log span, .logHead span{
+.userLogs .log span, .logHead span, .userArticles span{
   display: inline-block;
   width: 19.89%;
   height: 25px;
@@ -568,13 +568,16 @@ footer p
   border-right: 1px solid #dadada;
   text-align: center;
 }
-.userLogs .log span:last-child{
+.userArticles .title{
+  width: 79%;
+}
+.userLogs .log span:last-child, .userArticles .title{
   border-right: 0;
 }
-.userLogs .log:nth-child(even){
+.userLogs .log:nth-child(even), .userArticles .article:nth-child(even){
   background-color: #c7435011;
 }
-.userLogs .logHead span{
+.userLogs .logHead span, .userArticles .articleHead span{
   color: white;
   font-weight: bold;
   background-color: #c74350;

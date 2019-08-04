@@ -106,7 +106,6 @@ router.get('/:id', async(req, res, next) => {
             console.log(err)
             return;
         }else{
-            const rank = await Rank.findById(req.user.type);
             const userRank = await Rank.findById(userP.type);
             const translatedRanks = {
                 'admin': 'Administrator',
@@ -119,13 +118,16 @@ router.get('/:id', async(req, res, next) => {
             redirect.userRankStyle = userRank.name
             redirect.userP = userP;
             redirect.allowEdit = false;
-            if(userRank.addArticle){
-                let query = {
-                    author: mongoose.Types.ObjectId(req.params.id)
-                }
-                redirect.articles = await Article.countDocuments(query); 
+            
+            let query = {
+                $and: [{author: mongoose.Types.ObjectId(req.params.id)}, {displayed: true}]
+                
             }
+            const articles = await Article.countDocuments(query); 
+            
+            if (articles > 0){ redirect.articles = articles}
             if (req.user){
+                const rank = await Rank.findById(req.user.type);
                 if(userP._id.toString() == req.user._id.toString() || rank.editUser){
                     redirect.allowEdit = true;
                 }

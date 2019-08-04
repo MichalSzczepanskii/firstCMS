@@ -24,7 +24,8 @@ block content
             if typeof articles != 'undefined'
                 .infoRow
                     span.info Artykuły 
-                    span.value #{articles}
+                    span.value
+                        a(href="/articles/user/"+userP._id) #{articles}
         .userLogs
             if(typeof logs != 'undefined' && logs!='')
                 .userProfileTitle
