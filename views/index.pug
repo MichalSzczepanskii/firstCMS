@@ -19,3 +19,23 @@ block content
                         h2
                             a.home-article-title(href="/articles/"+article._id)= article.title
                         .home-article-content !{article.short}... 
+        if pageCount > 1
+            if page == 1
+                a(href="/?page=2") Starsze
+            else
+                if page != 1
+                    a.pageButton(href="/?page=1") <<
+                    a.pageButton(href="/?page="+previousPage) <
+                    if previousSecondPage != 0
+                        a.pageButton(href="/?page="+previousSecondPage)= previousSecondPage
+                    a.pageButton(href="/?page="+previousPage)= previousPage
+                a.pageButton.currentPage(href="/?page="+page)= page
+                if nextPage <= pageCount
+                    a.pageButton(href="/?page="+nextPage)= nextPage
+                    if nextSecondPage <= pageCount
+                        a.pageButton(href="/?page="+nextSecondPage)= nextSecondPage
+                    a.pageButton(href="/?page="+nextPage) >
+                if page != pageCount
+                    a.pageButton(href="/?page"+pageCount) >>
+                
+            

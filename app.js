@@ -66,9 +66,15 @@ const Article = require('./models/article');
 const User = require('./models/user');
 
 //Home route
-app.get('/',(req, res) => {
-    Article.aggregate(
+app.get('/',async(req, res) => {
+    const articleCount = await Article.countDocuments({displayed: true});
+    let pageCount = Math.ceil(articleCount/5);
+    const page = parseInt(req.query.page,10) || 1;
+    const articles = await Article.aggregate(
       [
+      {
+        $match: {displayed: true}
+      },
       {
         $lookup: {
           from: "users", 
@@ -89,16 +95,14 @@ app.get('/',(req, res) => {
       },
       {$sort: {_id: -1}}
       ]
-  , (err, articles) =>{
-      if (err){
-        console.log(err);
-      }else{
-        res.render('index',{
-          articles
-        })
-      }
-    });
-    
+  ).skip(5*(page - 1))
+   .limit(5)
+  let nextPage = page + 1;
+  let nextSecondPage = nextPage + 1;
+  let previousPage = page - 1 < 1 ? 1 : page - 1
+  let previousSecondPage = previousPage - 1 == previousPage ? 0 : previousPage - 1
+  res.render('index',{articles, pageCount, nextPage, page, previousPage, previousSecondPage, nextSecondPage});
+
 })
 
 app.locals.ucfirst = function(value){

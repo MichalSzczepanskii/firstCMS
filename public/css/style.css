@@ -618,3 +618,15 @@ footer p
 .btn-right{
   float: right;
 }
+.pageButton{
+  display: inline-block;
+  background-color: rgb(199, 199, 199);
+  color: rgb(0, 0, 0);
+  font-size: 15px;
+  margin: 0px 2px;
+  padding: 3px;
+  text-decoration: none;
+}
+.currentPage{
+  background-color: #c74350;
+}
