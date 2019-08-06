@@ -78,13 +78,15 @@ router.post('/register',[
 
 //Display login form
 router.get('/login', (req, res) => {
+    req.session.backURL=req.header('Referer') || '/';
     res.render('login');
 })
 
 //Handle login form
 router.post('/login', (req, res, next) => {
+    const ssn = req.session;
     passport.authenticate('local', {
-        successRedirect: '/',
+        successRedirect: req.session.backURL || '/',
         failureRedirect: '/users/login',
         failureFlash: true,
         successFlash: "Logowanie przebiegło pomyślnie.",
