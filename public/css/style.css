@@ -568,16 +568,25 @@ footer p
   border-right: 1px solid #dadada;
   text-align: center;
 }
+.userList span{
+  display: inline-block;
+  width: 33.2%;
+  height: 25px;
+  font-size: 15px;
+  line-height: 25px;
+  border-right: 1px solid #dadada;
+  text-align: center;
+}
 .userArticles .title{
   width: 79%;
 }
 .userLogs .log span:last-child, .userArticles .title{
   border-right: 0;
 }
-.userLogs .log:nth-child(even), .userArticles .article:nth-child(even){
+.userLogs .log:nth-child(even), .userArticles .article:nth-child(even), .userList .user:nth-child(even){
   background-color: #c7435011;
 }
-.userLogs .logHead span, .userArticles .articleHead span{
+.userLogs .logHead span, .userArticles .articleHead span, .userList .head{
   color: white;
   font-weight: bold;
   background-color: #c74350;
@@ -590,18 +599,6 @@ footer p
 }
 .type-journalist,.type-admin,.type-moderator,.type-user{
   font-weight: bold;
-}
-.type-journalist{
-  color: blue;
-}
-.type-admin{
-  color: red;
-}
-.type-moderator{
-  color: green;
-}
-.type-user{
-  color: black;
 }
 .userInfo span{
   display: inline-block;
@@ -629,4 +626,16 @@ footer p
 }
 .currentPage{
   background-color: #c74350;
+}
+.type-journalist{
+  color: blue;
+}
+.type-admin{
+  color: red;
+}
+.type-moderator{
+  color: green;
+}
+.type-user{
+  color: black;
 }

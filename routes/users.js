@@ -100,6 +100,39 @@ router.post('/logout', (req, res, next) => {
     req.flash('success', 'Pomyślnie wylogowaneo.');
     res.redirect('/users/login');
 })
+router.get('/list', (req, res)=>{
+    User.aggregate([
+        {
+            $lookup:{
+                from: 'ranks',
+                localField: 'type',
+                foreignField: '_id',
+                as: 'rank'
+            }
+        },
+        {$unwind: "$rank"},
+        {
+            $project:{
+                username: 1,
+                registerDate: 1,
+                rank: "$rank.name",
+            }
+        },
+        {$sort: {_id: -1}}
+    ], (err, users)=>{
+        if(err){
+            console.log(err);
+        }else{
+            const translatedRanks = {
+                'admin': 'Administrator',
+                'moderator':'Moderator',
+                'journalist': 'Redaktor',
+                'user': 'Użytkownik'
+            }
+            res.render('user_list', {users,translatedRanks})
+        }
+    })
+})
 
 //User profile
 router.get('/:id', async(req, res, next) => {

@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    .main-part.pageTitle
+        h1.pageTitle Lista użytkowników
+    .main-part.subPage
+        .userList
+            div(class='head')
+                span Data rejestracji
+                span Nazwa użytkownika
+                span Ranga
+            each user, i in users
+                -var d = ('0' + user.registerDate.getDate()).slice(-2)
+                -var m = ('0' + (user.registerDate.getMonth() + 1)).slice(-2)
+                -var y = user.registerDate.getFullYear()
+                div(class='user')
+                    span.field #{d}.#{m}.#{y}
+                    span.field
+                        a(href='/users/'+user._id)= ucfirst(user.username)
+                    span.field(class= "type-"+user.rank)= translatedRanks[user.rank]
+
