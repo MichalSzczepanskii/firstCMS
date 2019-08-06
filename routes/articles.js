@@ -49,10 +49,18 @@ router.get('/:id', async(req, res) => {
     const {article, articleAuthor} = await articleAndUserById(req.params.id);
     let redirect = {article,
         author: articleAuthor.username,
-        allowEdit: allowEdit(articleAuthor, req)
+        allowEdit: false
     };
+        
     if(req.user){
+
         const rank = await Rank.findById(req.user.type);
+        if (req.user._id.toString() == articleAuthor.id.toString() || rank.editArticle){
+            if (articleAuthor.type == mongoose.Types.ObjectId('5d430adcb6d4219b1d458939')) redirect.allowEdit = false;//admin
+            else redirect.allowEdit =  true
+
+        }else redirect.allowEdit = false;
+
         if((ownByEditor(articleAuthor, req) && article.displayed) || (rank.editArticle)){
             let logs = await ArticleLog.aggregate([
                 {
@@ -209,16 +217,7 @@ router.get('/user/:id', async(req, res)=>{
 
 //Check if user has permission to edit
 async function allowEdit(articleAuthor, req){
-    if (req.user)
-    {
-        const rank = await Rank.findById(req.user.type);
-        if (req.user.id.toString() == articleAuthor.id.toString() || rank.editArticle){
-            if (articleAuthor.type == '5d430adcb6d4219b1d458939') return false;//admin
-            else return true
-
-        }else return false;
-    }
-    else return false;
+    
 }
 
 //Check if user that want to edit article own it
