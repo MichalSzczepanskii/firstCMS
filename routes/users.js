@@ -100,8 +100,9 @@ router.post('/logout', (req, res, next) => {
     req.flash('success', 'Pomyślnie wylogowaneo.');
     res.redirect('/users/login');
 })
-router.get('/list', (req, res)=>{
-    User.aggregate([
+
+router.get('/list', async(req, res)=>{
+    let query = [
         {
             $lookup:{
                 from: 'ranks',
@@ -119,7 +120,20 @@ router.get('/list', (req, res)=>{
             }
         },
         {$sort: {_id: -1}}
-    ], (err, users)=>{
+    ]
+    if(typeof req.query.user != 'undefined') {
+        let usernameQuery = {'username': {$regex: '.*'+ req.query.user.toLowerCase()+ '.*'}};
+        let searchQuery = {};
+        if (req.query.rank != 'all'){
+            const rankId = await Rank.findOne({name: req.query.rank})
+            searchQuery = {$match:{ $and: [usernameQuery, {'type': rankId._id}]}}
+        }else{
+            searchQuery = {$match: usernameQuery }
+        }
+        console.log(searchQuery);
+        query.unshift(searchQuery);
+    }
+    User.aggregate(query, (err, users)=>{
         if(err){
             console.log(err);
         }else{
@@ -129,9 +143,49 @@ router.get('/list', (req, res)=>{
                 'journalist': 'Redaktor',
                 'user': 'Użytkownik'
             }
-            res.render('user_list', {users,translatedRanks})
+            const searchRank = req.query.rank || '';
+            res.render('user_list', {users,translatedRanks, searchRank})
         }
     })
+})
+
+router.post('/list',[
+    check('username','Hasło wyszukiwania musi posiadać co najmniej trzy znaki.').isLength({min: 3})
+], async(req, res) => {
+    let errors = validationResult(req);
+    const users = await User.aggregate([
+        {
+            $lookup:{
+                from: 'ranks',
+                localField: 'type',
+                foreignField: '_id',
+                as: 'rank'
+            }
+        },
+        {$unwind: "$rank"},
+        {
+            $project:{
+                username: 1,
+                registerDate: 1,
+                rank: "$rank.name",
+            }
+        },
+        {$sort: {_id: -1}}
+    ]);
+    const translatedRanks = {
+        'admin': 'Administrator',
+        'moderator':'Moderator',
+        'journalist': 'Redaktor',
+        'user': 'Użytkownik'
+    }
+    if(!errors.isEmpty()){
+        res.render('user_list',{
+            errors: errors.array(),
+            users,translatedRanks
+        })
+    }else{
+        res.redirect('/users/list?user='+req.body.username+"&rank="+req.body.rank);
+    }
 })
 
 //User profile
