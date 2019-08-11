@@ -157,7 +157,6 @@ router.get("/list", async(req, res)=>{
 				$match: usernameQuery
 			};
 		}
-		console.log(searchQuery);
 		query.unshift(searchQuery);
 	}
 	User.aggregate(query, (err, users)=>{
@@ -181,8 +180,9 @@ router.get("/list", async(req, res)=>{
 });
 
 router.post("/list",[
-	check("username","Hasło wyszukiwania musi posiadać co najmniej trzy znaki.").isLength({
-		min: 3
+	check("username").custom((value)=>{
+		if (value.length<3 && value.length>0) {throw new Error("Hasło wyszukiwania musi posiadać conajmniej trzy znaki");}
+		else {return true;}
 	})
 ], async(req, res) => {
 	const errors = validationResult(req);
