@@ -4,19 +4,20 @@ block content
     .main-part.pageTitle
         h1.pageTitle Lista użytkowników
     .main-part.subPage
-        .userListSearch
-            .searchBar
-                    form(action="/users/list/" method="POST")
-                        select(name='rank')
-                            option(value='all') Wszyscy
-                            each type, i in translatedRanks
-                                if searchRank == i
-                                    option(value=i selected)= type
-                                else
-                                    option(value=i)= type
-                        input(type="text" name="username" placeholder="Wyszukaj..." class='searchTxt')
-                        button(type="submit")
-                            i.fa.fa-search
+        .clearfix
+            .right
+                .searchBar
+                        form(action="/users/list/" method="POST")
+                            select(name='rank')
+                                option(value='all') Wszyscy
+                                each type, i in translatedRanks
+                                    if searchRank == i
+                                        option(value=i selected)= type
+                                    else
+                                        option(value=i)= type
+                            input(type="text" name="username" placeholder="Wyszukaj..." class='searchTxt')
+                            button(type="submit")
+                                i.fa.fa-search
         .userList
             div(class='head')
                 span Data rejestracji
