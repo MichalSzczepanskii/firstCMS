@@ -20,5 +20,17 @@ const RankSchema = mongoose.Schema({
 		type: Boolean,
 		require: true
 	},
+	giveBan:{
+		type: Boolean,
+		require: true
+	},
+	giveWarn:{
+		type: Boolean,
+		require: true
+	},
+	blockAdding:{
+		type: Boolean,
+		require: true
+	}
 });
 module.exports = mongoose.model("Rank", RankSchema, "ranks");

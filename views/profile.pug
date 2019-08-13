@@ -8,7 +8,20 @@ block content
             h2 Informacje
         .userInfo
             if allowEdit
-                a.btn.btn-edit.btn-right(href="/users/edit/"+userP._id) Edytuj
+                .clearfix
+                    if giveWarn || giveBan
+                        .left
+                            form(action='' method='POST')
+                                select.form-select(name='controlAction')
+                                    if giveWarn
+                                        option(value='giveWarn') Nadaj ostrzeżenie
+                                    if giveBan
+                                        option(value='giveBan') Nadaj banicje
+                                    if blockAdding
+                                        option(value='blockAdding') Nadaj blokadę
+                                input.btn.btn-submit(type='submit' value='Zatwierdź')
+                    .right
+                        a.btn.btn-edit(href="/users/edit/"+userP._id) Edytuj
             -var d = ('0' + userP.registerDate.getDate()).slice(-2)
             -var m = ('0' + (userP.registerDate.getMonth() + 1)).slice(-2)
             -var y = userP.registerDate.getFullYear()

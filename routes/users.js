@@ -264,8 +264,17 @@ router.get("/:id", async(req, res) => {
 				if (userP._id.toString() == req.user._id.toString() || rank.editUser){
 					redirect.allowEdit = true;
 				}
-				if (userP.type=="5d430adcb6d4219b1d458939" && userP._id.toString() != req.user.id.toString()){//admin
-					redirect.allowEdit = false;
+				redirect.giveBan = rank.giveBan;
+				redirect.giveWarn = rank.giveWarn;
+				if (userP.type == "5d430b10b6d4219b1d45893b"){
+					redirect.blockAdding = rank.blockAdding;
+				}
+				if (userP.type == "5d430adcb6d4219b1d458939"){
+					redirect.giveBan = false;
+					redirect.giveWarn = false;
+					if (userP._id.toString() != req.user.id.toString()){
+						redirect.allowEdit = false;
+					}
 				}
 
 				if (req.user._id.toString() == req.params.id || rank.editUser){

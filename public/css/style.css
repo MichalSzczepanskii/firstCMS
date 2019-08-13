@@ -353,6 +353,11 @@ footer p {
   height: 250px;
 }
 
+.form-select {
+  margin: 5px 10px;
+  height: 40px;
+}
+
 #deleteForm {
   margin-left: 10px;
   display: inline-block;
