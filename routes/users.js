@@ -264,14 +264,11 @@ router.get("/:id", async(req, res) => {
 				if (userP._id.toString() == req.user._id.toString() || rank.editUser){
 					redirect.allowEdit = true;
 				}
-				redirect.giveBan = rank.giveBan;
-				redirect.giveWarn = rank.giveWarn;
-				if (userP.type == "5d430b10b6d4219b1d45893b"){
-					redirect.blockAdding = rank.blockAdding;
-				}
+				redirect.punishUser = rank.punishUser;
+				redirect.blockAdding = userP.type == "5d430b10b6d4219b1d45893b" ? rank.punishUser : false;
+				
 				if (userP.type == "5d430adcb6d4219b1d458939"){
-					redirect.giveBan = false;
-					redirect.giveWarn = false;
+					redirect.punishUser = false;
 					if (userP._id.toString() != req.user.id.toString()){
 						redirect.allowEdit = false;
 					}
@@ -329,6 +326,10 @@ router.get("/:id", async(req, res) => {
 			res.render("profile",redirect);
 		}
 	});
+});
+
+router.post("/action", ensureAuthenticated, punishAccess, (req, res)=>{
+	res.send(req.body.controlAction);
 });
 
 //edit user profile
@@ -398,10 +399,17 @@ router.post("/edit/:id", ensureAuthenticated, editAccess, async(req, res) => {
 	});
 });
 
+async function punishAccess(req, res, next){
+	accessHandle(await access("punishUser", req), req, res, next);
+}
 
-async function editAccess(req, res, next){
-	const rank = await Rank.findById(req.user.type);
-	if (rank.editUser || req.params.id == req.user._id.toString()){
+async function editAccess(req, res,  next){
+	const condition = (await access("editUser", req) || req.params.id == req.user._id.toString());
+	accessHandle(condition, req, res,  next);
+}
+
+function accessHandle(condition, req, res, next){
+	if (condition){
 		return next();
 	} else {
 		req.flash("error", "Brak dostępu.");
@@ -409,6 +417,10 @@ async function editAccess(req, res, next){
 	}
 }
 
+async function access(accessType, req){
+	const rank = await Rank.findById(req.user.type);
+	return rank[accessType];
+}
 
 function ensureAuthenticated(req, res, next){
 	if (req.isAuthenticated()){

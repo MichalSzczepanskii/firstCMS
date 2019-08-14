@@ -9,14 +9,12 @@ block content
         .userInfo
             if allowEdit
                 .clearfix
-                    if giveWarn || giveBan
+                    if punishUser
                         .left
-                            form(action='' method='POST')
+                            form(action='/users/action' method='POST')
                                 select.form-select(name='controlAction')
-                                    if giveWarn
-                                        option(value='giveWarn') Nadaj ostrzeżenie
-                                    if giveBan
-                                        option(value='giveBan') Nadaj banicje
+                                    option(value='giveWarn') Nadaj ostrzeżenie
+                                    option(value='giveBan') Nadaj banicje
                                     if blockAdding
                                         option(value='blockAdding') Nadaj blokadę
                                 input.btn.btn-submit(type='submit' value='Zatwierdź')

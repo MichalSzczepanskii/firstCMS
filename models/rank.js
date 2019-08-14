@@ -20,15 +20,7 @@ const RankSchema = mongoose.Schema({
 		type: Boolean,
 		require: true
 	},
-	giveBan:{
-		type: Boolean,
-		require: true
-	},
-	giveWarn:{
-		type: Boolean,
-		require: true
-	},
-	blockAdding:{
+	punishUser:{
 		type: Boolean,
 		require: true
 	}
