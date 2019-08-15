@@ -328,8 +328,28 @@ router.get("/:id", async(req, res) => {
 	});
 });
 
-router.post("/action", ensureAuthenticated, punishAccess, (req, res)=>{
-	res.send(req.body.controlAction);
+router.post("/:id/action", ensureAuthenticated, punishAccess, async (req, res)=>{
+	const user = await User.findById(req.params.id);
+	switch (req.body.controlAction){
+	case "giveBan":
+		res.render("punish_ban",{
+			user
+		});
+		break;
+	case "giveWarn":
+		res.render("punish_warn",{
+			user
+		});
+		break;
+	case "blockAdding":
+		res.render("punish_block",{
+			user
+		});
+		break;
+	default:
+		console.log("test");
+		break;
+	}
 });
 
 //edit user profile
