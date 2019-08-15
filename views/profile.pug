@@ -11,7 +11,7 @@ block content
                 .clearfix
                     if punishUser
                         .left
-                            form(action='/users/action' method='POST')
+                            form(action='/users/'+userP._id.toString()+'/action' method='POST')
                                 select.form-select(name='controlAction')
                                     option(value='giveWarn') Nadaj ostrzeżenie
                                     option(value='giveBan') Nadaj banicje

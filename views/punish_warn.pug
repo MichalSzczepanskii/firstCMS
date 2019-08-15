@@ -1,0 +1,12 @@
+extends layout
+
+block content
+    div.main-part.pageTitle
+        h1.pageTitle Nadaj ostrzeżenie użytkownikowi #{ucfirst(user.username)}
+    .main-part.subPage
+        form(action="/users/"+user._id.toString()+"/action/warn", method="POST")
+            .form-group
+                label Powód:
+                input.form-control(name="reason", type="text")
+            input.btn.btn-submit(type="submit", value="Dodaj")
+            a.btn.btn-edit(href="/users/"+user._id.toString()) Wróć
