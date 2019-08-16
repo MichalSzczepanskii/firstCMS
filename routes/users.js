@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
-const mongoose = require("mongoose"); 
+const mongoose = require("mongoose");
+const moment = require("moment"); 
 
 //Setup validation
 const {
@@ -14,6 +15,10 @@ const User = require("../models/user");
 const Article = require("../models/article");
 const ArticleLog = require("../models/articleLog");
 const Rank = require("../models/rank");
+const Warn = require("../models/warn");
+const Ban = require("../models/ban");
+const Block = require("../models/block");
+const UserLog = require("../models/userLog");
 
 
 //Display register form
@@ -350,6 +355,72 @@ router.post("/:id/action", ensureAuthenticated, punishAccess, async (req, res)=>
 		console.log("test");
 		break;
 	}
+});
+
+router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
+	check("reason","Powód jest wymagany.").not().isEmpty()
+], (req, res) => {
+	function insertToDb(err, action){
+		if (err){
+			console.log(err);
+		} else {
+			const userLog = new UserLog;
+			userLog.userId = mongoose.Types.ObjectId(req.params.id);
+			userLog.type = req.params.type;
+			userLog.detailId = action._id;
+			userLog.save((err) => {
+				if (err){
+					console.log(err);
+				} else {
+					req.flash("success","Pomyślnie dodano ostrzeżenie");
+					res.redirect("/users/"+req.params.id);
+				}
+			});
+		}
+	}
+
+	function setLength(length){
+		switch (length){
+		case "day": return 1;
+		case "2days": return 2;
+		case "week": return 7;
+		case "2weeks": return 14;
+		case "month": return 30;
+		case "perm": return 999;
+		}
+	}
+	switch (req.params.type){
+	case "warn":{
+		const warn = new Warn;
+		warn.authorId = req.user._id;
+		warn.reason = req.body.reason;
+		warn.save(insertToDb);
+		break;
+	}
+	case "ban":{
+		const ban = new Ban;
+		ban.authorId = req.user._id;
+		ban.reason = req.body.reason;
+		const date = moment();
+		const length = setLength(req.body.length);
+		const endDate = moment(date).add(length, "days");
+		ban.endDate = endDate;
+		ban.save(insertToDb);
+		break;
+	}
+	case "block":{
+		const block = new Block;
+		block.authorId = req.user._id;
+		block.reason = req.body.reason;
+		const date = moment();
+		const length = setLength(req.body.length);
+		const endDate = moment(date).add(length, "days");
+		block.endDate = endDate;
+		block.save(insertToDb);
+		break;
+	}
+	}
+	
 });
 
 //edit user profile

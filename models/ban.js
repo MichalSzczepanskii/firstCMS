@@ -17,7 +17,7 @@ const BanDetailsSchema = mongoose.Schema({
 	},
 	endDate:{
 		type: Date,
-		default: new Date()
+		required: true
 	}
 });
 
