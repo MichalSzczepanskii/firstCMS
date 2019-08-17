@@ -38,9 +38,26 @@ block content
                     span.value
                         a(href="/articles/user/"+userP._id) #{articles}
         .userLogs
+            .userProfileTitle
+                h2 Logi
+            if(typeof warns != 'undefined' && warns!='')
+                h3 Ostrzeżenia
+                div(class='logHead')
+                    span Data
+                    span Nadał
+                    span Powód
+                each warn, i in warns
+                    div(class='log')
+                        -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
+                        -var d = warn.date.getDate()
+                        -var m = monthName[warn.date.getMonth()]
+                        -var y = warn.date.getFullYear()
+                        span #{d} #{m} #{y}
+                        span
+                            a(href='/articles/'+warn.authorId)= ucfirst(warn.author)
+                        span #{warn.reason}
             if(typeof logs != 'undefined' && logs!='')
-                .userProfileTitle
-                    h2 Logi
+                h3 Artykuły
                 div(class='logHead')
                     span Data
                     span Artykuł

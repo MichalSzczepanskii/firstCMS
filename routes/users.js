@@ -18,7 +18,6 @@ const Rank = require("../models/rank");
 const Warn = require("../models/warn");
 const Ban = require("../models/ban");
 const Block = require("../models/block");
-const UserLog = require("../models/userLog");
 
 
 //Display register form
@@ -327,7 +326,40 @@ router.get("/:id", async(req, res) => {
 						}
 					]);
 				}
+
+				if (req.user._id.toString() == req.params.id || rank.punishUser){
+					const warns = await Warn.aggregate([
+						{
+							$match:{
+								userId: mongoose.Types.ObjectId(req.params.id)
+							}
+						},
+						{
+							$lookup:{
+								from: "users",
+								localField: "authorId",
+								foreignField: "_id",
+								as: "author"
+							}
+						},
+						{
+							$unwind: "$author"
+						},
+						{
+							$project:{
+								authorId: 1,
+								author: "$author.username",
+								date: 1,
+								reason: 1,
+							}
+						}
+					]);
+					if (warns){
+						redirect.warns = warns;
+					}
+				}
 			}
+			console.log(redirect.warns);
 			res.render("profile",redirect);
 		}
 	});
@@ -360,22 +392,12 @@ router.post("/:id/action", ensureAuthenticated, punishAccess, async (req, res)=>
 router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 	check("reason","Powód jest wymagany.").not().isEmpty()
 ], (req, res) => {
-	function insertToDb(err, action){
+	function insertToDb(err){
 		if (err){
 			console.log(err);
 		} else {
-			const userLog = new UserLog;
-			userLog.userId = mongoose.Types.ObjectId(req.params.id);
-			userLog.type = req.params.type;
-			userLog.detailId = action._id;
-			userLog.save((err) => {
-				if (err){
-					console.log(err);
-				} else {
-					req.flash("success","Pomyślnie dodano ostrzeżenie");
-					res.redirect("/users/"+req.params.id);
-				}
-			});
+			req.flash("success","Pomyślnie dodano ostrzeżenie");
+			res.redirect("/users/"+req.params.id);
 		}
 	}
 
@@ -392,6 +414,7 @@ router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 	switch (req.params.type){
 	case "warn":{
 		const warn = new Warn;
+		warn.userId = req.params.id;
 		warn.authorId = req.user._id;
 		warn.reason = req.body.reason;
 		warn.save(insertToDb);
@@ -399,6 +422,7 @@ router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 	}
 	case "ban":{
 		const ban = new Ban;
+		ban.userId = req.params.id;
 		ban.authorId = req.user._id;
 		ban.reason = req.body.reason;
 		const date = moment();
@@ -410,6 +434,7 @@ router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 	}
 	case "block":{
 		const block = new Block;
+		block.userId = req.params.id;
 		block.authorId = req.user._id;
 		block.reason = req.body.reason;
 		const date = moment();
