@@ -250,7 +250,8 @@ router.get("/:id", async(req, res) => {
 				userRank: translatedRanks[userRank.name],
 				userRankStyle: userRank.name,
 				userP,
-				allowEdit: false
+				allowEdit: false,
+				displayLogs: false
 			};
             
 			const query = {
@@ -279,7 +280,7 @@ router.get("/:id", async(req, res) => {
 				}
 
 				if (req.user._id.toString() == req.params.id || rank.editUser){
-					redirect.logs = await ArticleLog.aggregate([
+					const articleLogs = await ArticleLog.aggregate([
 						{
 							$match:{
 								authorId: mongoose.Types.ObjectId(req.params.id)
@@ -325,6 +326,10 @@ router.get("/:id", async(req, res) => {
 							}
 						}
 					]);
+					if (articleLogs != ""){
+						redirect.articleLogs = articleLogs;
+						redirect.displayLogs = true;
+					}
 				}
 
 				if (req.user._id.toString() == req.params.id || rank.punishUser){
@@ -352,10 +357,16 @@ router.get("/:id", async(req, res) => {
 								date: 1,
 								reason: 1,
 							}
+						},
+						{
+							$sort:{
+								_id: -1
+							}
 						}
 					]);
-					if (warns){
+					if (warns != ""){
 						redirect.warns = warns;
+						redirect.displayLogs = true;
 					}
 				}
 			}
