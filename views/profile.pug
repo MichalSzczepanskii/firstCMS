@@ -37,47 +37,49 @@ block content
                     span.info Artykuły 
                     span.value
                         a(href="/articles/user/"+userP._id) #{articles}
-        .userLogs
-            .userProfileTitle
-                h2 Logi
-            if(typeof warns != 'undefined' && warns!='')
-                h3 Ostrzeżenia
-                div(class='logHead')
-                    span Data
-                    span Nadał
-                    span Powód
-                each warn, i in warns
-                    div(class='log')
-                        -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-                        -var d = warn.date.getDate()
-                        -var m = monthName[warn.date.getMonth()]
-                        -var y = warn.date.getFullYear()
-                        span #{d} #{m} #{y}
-                        span
-                            a(href='/articles/'+warn.authorId)= ucfirst(warn.author)
-                        span #{warn.reason}
-            if(typeof logs != 'undefined' && logs!='')
-                h3 Artykuły
-                div(class='logHead')
-                    span Data
-                    span Artykuł
-                    span Autor logu
-                    span Powód
-                    span Akcja
-                each log, i in logs
-                    if log.displayed
-                        div(class='log')
+        if displayLogs
+            #{console.log(displayLogs)}
+            .tableSection
+                .userProfileTitle
+                    h2 Logi
+                if(typeof warns != 'undefined')
+                    h3 Ostrzeżenia
+                    div(class='tableHead col-3')
+                        span Data
+                        span Nadał
+                        span Powód
+                    each warn, i in warns
+                        div(class='tableRow col-3')
                             -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-                            -var d = log.date.getDate()
-                            -var m = monthName[log.date.getMonth()]
-                            -var y = log.date.getFullYear()
-                            -var actionTranslate = {'edit':'Edycja','delete':'Usunięcie'}
-                            -var action = actionTranslate[log.action]
+                            -var d = warn.date.getDate()
+                            -var m = monthName[warn.date.getMonth()]
+                            -var y = warn.date.getFullYear()
                             span #{d} #{m} #{y}
                             span
-                                a(href='/articles/'+log.articleId)= log.title
-                            span
-                                a(href='/users/'+log.editorId)= ucfirst(log.editor)
-                            span= log.reason
-                            span= action
+                                a(href='/articles/'+warn.authorId)= ucfirst(warn.author)
+                            span #{warn.reason}
+                if(typeof articleLogs != 'undefined')
+                    h3 Artykuły
+                    div(class='tableHead col-5')
+                        span Data
+                        span Artykuł
+                        span Autor logu
+                        span Powód
+                        span Akcja
+                    each articleLog, i in articleLogs
+                        if articleLog.displayed
+                            div(class='tableRow col-5')
+                                -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
+                                -var d = articleLog.date.getDate()
+                                -var m = monthName[articleLog.date.getMonth()]
+                                -var y = articleLog.date.getFullYear()
+                                -var actionTranslate = {'edit':'Edycja','delete':'Usunięcie'}
+                                -var action = actionTranslate[articleLog.action]
+                                span #{d} #{m} #{y}
+                                span
+                                    a(href='/articles/'+articleLog.articleId)= articleLog.title
+                                span
+                                    a(href='/users/'+articleLog.editorId)= ucfirst(articleLog.editor)
+                                span= articleLog.reason
+                                span= action
 

@@ -185,6 +185,57 @@ template {
   display: none;
 }
 
+.tableSection {
+  padding: 20px 15px;
+}
+
+.tableRow {
+  color: grey;
+}
+
+.tableRow span, .tableHead span {
+  display: inline-block;
+  height: 25px;
+  font-size: 15px;
+  line-height: 25px;
+  border-right: 1px solid #dadada;
+  text-align: center;
+}
+
+.tableRow span:last-child, .tableHead span:last-child {
+  border-right: 0;
+}
+
+.tableRow:nth-child(even) {
+  background-color: #f6e0e2;
+}
+
+.tableHead span {
+  color: white;
+  font-weight: bold;
+  background-color: #c74350;
+}
+
+.col-5 span {
+  width: 19.91%;
+}
+
+.col-3 span {
+  width: 33.26%;
+}
+
+.col-2 span {
+  width: 49.91%;
+}
+
+.col-1-2 span:first-child {
+  width: 20%;
+}
+
+.col-1-2 span:last-child {
+  width: 79.89%;
+}
+
 .navbar {
   background-color: #333;
   overflow: hidden;
@@ -461,93 +512,6 @@ footer p {
   border-color: #d6e9c6;
 }
 
-.userInfo, .userLogs, .userArticles {
-  padding: 20px 15px;
-}
-
-.userProfileTitle {
-  border-bottom: 1px solid #eeeeee;
-  padding: 0px 0px 10px 10px;
-  font-size: 19px;
-}
-
-.userLogs .log span, .logHead span, .userArticles span {
-  display: inline-block;
-  width: 19.89%;
-  height: 25px;
-  font-size: 15px;
-  color: grey;
-  line-height: 25px;
-  border-right: 1px solid #dadada;
-  text-align: center;
-}
-
-.userList span {
-  display: inline-block;
-  width: 33.2%;
-  height: 25px;
-  font-size: 15px;
-  line-height: 25px;
-  border-right: 1px solid #dadada;
-  text-align: center;
-}
-
-.userArticles .title {
-  width: 79%;
-}
-
-.userLogs .log span:last-child, .userArticles .title {
-  border-right: 0;
-}
-
-.userLogs .log:nth-child(even), .userArticles .article:nth-child(even), .userList .user:nth-child(even) {
-  background-color: #f6e0e2;
-}
-
-.userLogs .logHead span, .userArticles .articleHead span, .userList .head {
-  color: white;
-  font-weight: bold;
-  background-color: #c74350;
-}
-
-.infoRow {
-  margin-top: 10px;
-}
-
-.infoRow:first-child {
-  margin: 0;
-}
-
-.type-journalist, .type-admin, .type-moderator, .type-user {
-  font-weight: bold;
-}
-
-.type-journalist {
-  color: blue;
-}
-
-.type-admin {
-  color: red;
-}
-
-.type-moderator {
-  color: green;
-}
-
-.type-user {
-  color: black;
-}
-
-.userInfo span {
-  display: inline-block;
-  width: 100px;
-}
-
-.userInfo .info {
-  text-align: right;
-  padding-right: 10px;
-}
-
 .searchBar {
   padding: 10px 0px 30px 0px;
 }
@@ -588,5 +552,57 @@ footer p {
 
 .h35 {
   height: 35px;
+}
+
+.userInfo, .userLogs, .userArticles {
+  padding: 20px 15px;
+}
+
+.userProfileTitle {
+  border-bottom: 1px solid #eeeeee;
+  padding: 0px 0px 10px 10px;
+  font-size: 19px;
+}
+
+.userArticles .title {
+  width: 79%;
+}
+
+.userInfo span {
+  display: inline-block;
+  width: 100px;
+}
+
+.userInfo .info {
+  text-align: right;
+  padding-right: 10px;
+}
+
+.infoRow {
+  margin-top: 10px;
+}
+
+.infoRow:first-child {
+  margin: 0;
+}
+
+.type-journalist, .type-admin, .type-moderator, .type-user {
+  font-weight: bold;
+}
+
+.type-journalist {
+  color: blue;
+}
+
+.type-admin {
+  color: red;
+}
+
+.type-moderator {
+  color: green;
+}
+
+.type-user {
+  color: black;
 }
 /*# sourceMappingURL=style.css.map */

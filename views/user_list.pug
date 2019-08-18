@@ -18,8 +18,8 @@ block content
                             input(type="text" name="username" placeholder="Wyszukaj..." class='searchTxt')
                             button(type="submit")
                                 i.fa.fa-search
-        .userList
-            div(class='head')
+        .tableSection
+            div(class='tableHead col-3')
                 span Data rejestracji
                 span Nazwa użytkownika
                 span Ranga
@@ -27,9 +27,9 @@ block content
                 -var d = ('0' + user.registerDate.getDate()).slice(-2)
                 -var m = ('0' + (user.registerDate.getMonth() + 1)).slice(-2)
                 -var y = user.registerDate.getFullYear()
-                div(class='user')
-                    span.field #{d}.#{m}.#{y}
-                    span.field
+                div(class='tableRow col-3')
+                    span #{d}.#{m}.#{y}
+                    span
                         a(href='/users/'+user._id)= ucfirst(user.username)
-                    span.field(class= "type-"+user.rank)= translatedRanks[user.rank]
+                    span(class= "type-"+user.rank)= translatedRanks[user.rank]
 

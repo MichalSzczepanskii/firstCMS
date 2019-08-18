@@ -4,18 +4,18 @@ block content
     .main-part.pageTitle
         h1.pageTitle Artykuły: #{ucfirst(user.username)}
     .main-part.subPage
-        .userArticles
-            div(class='articleHead')
+        .tableSection
+            div(class='tableHead col-1-2')
                 span Data
-                span.title Tytuł
+                span Tytuł
             each article, i in articles
                 if article.displayed
-                    div(class='article')
+                    div(class='tableRow col-1-2')
                         -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
                         -var d = article.date.getDate()
                         -var m = monthName[article.date.getMonth()]
                         -var y = article.date.getFullYear()
                         span #{d} #{m} #{y}
-                        span.title
+                        span
                             a(href='/articles/'+article._id)= article.title
 
