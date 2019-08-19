@@ -24,7 +24,7 @@ block content
                                     else
                                         option(value=rank._id) #{polishRank(rank.name)}
                     else
-                        span(class="value type-"+userP.type) #{type}
+                        span(class="value type-"+userP.type) #{polishRank(userP.type)}
                 .infoRow
                     span.info Email 
                     span.value 

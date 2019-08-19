@@ -370,7 +370,6 @@ router.get("/:id", async(req, res) => {
 					}
 				}
 			}
-			console.log(redirect.warns);
 			res.render("profile",redirect);
 		}
 	});

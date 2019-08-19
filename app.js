@@ -13,7 +13,8 @@ const app = express();
 
 //Database
 mongoose.connect(config.database,{
-	useNewUrlParser: true
+	useNewUrlParser: true,
+	useCreateIndex: true
 });
 const db = mongoose.connection;
 

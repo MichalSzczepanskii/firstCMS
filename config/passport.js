@@ -1,6 +1,15 @@
 const bcrypt = require("bcryptjs");
+const moment = require("moment"); 
+const Ban = require("../models/ban");
 const User = require("../models/user");
 const LocalStrategy = require("passport-local").Strategy;
+
+const fullDate = function(value){
+	const d = ("0" + value.getDate()).slice(-2);
+	const m = ("0" + (value.getMonth() + 1)).slice(-2);
+	const y = value.getFullYear();
+	return `${d}.${m}.${y}`;
+};
 
 module.exports = (passport) => {
 	//Local Strategy
@@ -21,7 +30,27 @@ module.exports = (passport) => {
 			bcrypt.compare(password, user.password, (err, isMatch) =>{
 				if (err) {throw err;}
 				if (isMatch){
-					return done(null, user);
+					User.findOne(query, (err, user) =>{
+						Ban.findOne({
+							userId: user._id
+						}, (err, ban) =>{
+							if (ban != null){
+								const currentDate = moment();
+								if (moment(ban.endDate).diff(currentDate) > 0){
+									return done(null, false, {
+										message: `Jesteś zbanowany do ${fullDate(ban.endDate)} za ${ban.reason}`
+									});
+								} else {
+									return done(null, user);
+								}
+							} else {
+								return done(null, user);
+							}
+						}).sort({
+							_id: -1
+						}).limit(1);
+					});
+					
 				} else {
 					return done(null, false, {
 						message: "Błędny login lub hasło"
