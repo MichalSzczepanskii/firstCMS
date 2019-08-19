@@ -11,11 +11,7 @@ block content
             each article, i in articles
                 if article.displayed
                     div(class='tableRow col-1-2')
-                        -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-                        -var d = article.date.getDate()
-                        -var m = monthName[article.date.getMonth()]
-                        -var y = article.date.getFullYear()
-                        span #{d} #{m} #{y}
+                        span #{polishDate(article.date)}
                         span
                             a(href='/articles/'+article._id)= article.title
 

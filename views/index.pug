@@ -8,11 +8,7 @@ block content
             if article.displayed
                 article.home-article
                     div.article-left
-                        -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-                        -var d = article.date.getDate()
-                        -var m = monthName[article.date.getMonth()]
-                        -var y = article.date.getFullYear()
-                        p.home-article-date #{d} #{m} #{y}
+                        p.home-article-date #{polishDate(article.date)}
                         p.home-article-author Przez: 
                             a(href="/users/"+article.author_id) #{ucfirst(article.author)}
                     div.article-right

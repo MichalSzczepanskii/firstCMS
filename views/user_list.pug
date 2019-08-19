@@ -24,11 +24,8 @@ block content
                 span Nazwa użytkownika
                 span Ranga
             each user, i in users
-                -var d = ('0' + user.registerDate.getDate()).slice(-2)
-                -var m = ('0' + (user.registerDate.getMonth() + 1)).slice(-2)
-                -var y = user.registerDate.getFullYear()
                 div(class='tableRow col-3')
-                    span #{d}.#{m}.#{y}
+                    span #{fullDate(user.registerDate)}
                     span
                         a(href='/users/'+user._id)= ucfirst(user.username)
                     span(class= "type-"+user.rank)= translatedRanks[user.rank]

@@ -133,6 +133,30 @@ app.locals.ucfirst = function(value){
 	return value.charAt(0).toUpperCase() + value.slice(1);
 };
 
+app.locals.polishDate = function(value){
+	const monthName = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
+	const d = value.getDate();
+	const m = monthName[value.getMonth()];
+	const y = value.getFullYear();
+	return `${d} ${m} ${y}`;
+};
+
+app.locals.fullDate = function(value){
+	const d = ("0" + value.getDate()).slice(-2);
+	const m = ("0" + (value.getMonth() + 1)).slice(-2);
+	const y = value.getFullYear();
+	return `${d}.${m}.${y}`;
+};
+
+app.locals.polishRank = function(value){
+	const typeTranslate = {
+		"moderator": "Moderator",
+		"admin": "Administrator",
+		"user": "Użytkownik",
+		"journalist":"Redaktor"
+	};
+	return typeTranslate[value];
+};
 //Route files
 const users = require("./routes/users");
 const articles = require("./routes/articles");

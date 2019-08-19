@@ -9,15 +9,10 @@ block content
         .userInfo
             if allowEdit
                 a.btn.btn-edit.btn-right(href="/edit/"+userP._id) Edytuj
-            -var typeTranslate = {'moderator': 'Moderator','admin': 'Administrator','user': 'Użytkownik','journalist':'Redaktor'}
-            -var type = typeTranslate[userP.type]
-            -var d = ('0' + userP.registerDate.getDate()).slice(-2)
-            -var m = ('0' + (userP.registerDate.getMonth() + 1)).slice(-2)
-            -var y = userP.registerDate.getFullYear()
             form(action='/users/edit/'+userP._id method='POST')
                 .infoRow
                     span.info Rejestracja
-                    span.value #{d}.#{m}.#{y}
+                    span.value #{fullDate(userP.registerDate)}
                 .infoRow
                     span.info Ranga
                     if superEdit
@@ -25,9 +20,9 @@ block content
                             select(name='type')
                                 each rank, i in ranks
                                     if rank._id.toString() == userP.type.toString()
-                                        option(value=rank._id selected='selected')= translatedRanks[rank.name]
+                                        option(value=rank._id selected='selected') #{polishRank(rank.name)}
                                     else
-                                        option(value=rank._id)= translatedRanks[rank.name]
+                                        option(value=rank._id) #{polishRank(rank.name)}
                     else
                         span(class="value type-"+userP.type) #{type}
                 .infoRow

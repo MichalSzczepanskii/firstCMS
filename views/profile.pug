@@ -20,12 +20,9 @@ block content
                                 input.btn.btn-submit(type='submit' value='Zatwierdź')
                     .right
                         a.btn.btn-edit(href="/users/edit/"+userP._id) Edytuj
-            -var d = ('0' + userP.registerDate.getDate()).slice(-2)
-            -var m = ('0' + (userP.registerDate.getMonth() + 1)).slice(-2)
-            -var y = userP.registerDate.getFullYear()
             .infoRow
                 span.info Rejestracja
-                span.value #{d}.#{m}.#{y}
+                span.value #{fullDate(userP.registerDate)}
             .infoRow
                 span.info Ranga
                 span(class="value type-"+userRankStyle) #{userRank}
@@ -50,11 +47,7 @@ block content
                         span Powód
                     each warn, i in warns
                         div(class='tableRow col-3')
-                            -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-                            -var d = warn.date.getDate()
-                            -var m = monthName[warn.date.getMonth()]
-                            -var y = warn.date.getFullYear()
-                            span #{d} #{m} #{y}
+                            span #{polishDate(warn.date)}
                             span
                                 a(href='/articles/'+warn.authorId)= ucfirst(warn.author)
                             span #{warn.reason}
@@ -69,13 +62,9 @@ block content
                     each articleLog, i in articleLogs
                         if articleLog.displayed
                             div(class='tableRow col-5')
-                                -var monthName = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień']
-                                -var d = articleLog.date.getDate()
-                                -var m = monthName[articleLog.date.getMonth()]
-                                -var y = articleLog.date.getFullYear()
                                 -var actionTranslate = {'edit':'Edycja','delete':'Usunięcie'}
                                 -var action = actionTranslate[articleLog.action]
-                                span #{d} #{m} #{y}
+                                span #{polishDate(articleLog.date)}
                                 span
                                     a(href='/articles/'+articleLog.articleId)= articleLog.title
                                 span
