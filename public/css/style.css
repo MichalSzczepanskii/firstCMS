@@ -220,6 +220,10 @@ template {
   width: 19.91%;
 }
 
+.col-4 span {
+  width: 24.91%;
+}
+
 .col-3 span {
   width: 33.26%;
 }
