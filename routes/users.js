@@ -333,7 +333,7 @@ router.get("/:id", async(req, res) => {
 				}
 
 				if (req.user._id.toString() == req.params.id || rank.punishUser){
-					const warns = await Warn.aggregate([
+					const query = [
 						{
 							$match:{
 								userId: mongoose.Types.ObjectId(req.params.id)
@@ -363,9 +363,17 @@ router.get("/:id", async(req, res) => {
 								_id: -1
 							}
 						}
-					]);
+					];
+					const warns = await Warn.aggregate(query);
 					if (warns != ""){
 						redirect.warns = warns;
+						redirect.displayLogs = true;
+					}
+					
+					query[query.length-2].$project.endDate = 1;
+					const bans = await Ban.aggregate(query);
+					if (warns != ""){
+						redirect.bans = bans;
 						redirect.displayLogs = true;
 					}
 				}
@@ -401,12 +409,12 @@ router.post("/:id/action", ensureAuthenticated, punishAccess, async (req, res)=>
 
 router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 	check("reason","Powód jest wymagany.").not().isEmpty()
-], (req, res) => {
-	function insertToDb(err){
+], async (req, res) => {
+	function insertToDb(err, msg){
 		if (err){
 			console.log(err);
 		} else {
-			req.flash("success","Pomyślnie dodano ostrzeżenie");
+			req.flash("success", msg);
 			res.redirect("/users/"+req.params.id);
 		}
 	}
@@ -427,19 +435,31 @@ router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 		warn.userId = req.params.id;
 		warn.authorId = req.user._id;
 		warn.reason = req.body.reason;
-		warn.save(insertToDb);
+		warn.save(err => insertToDb(err, "Pomyślnie dodano ostrzeżenie"));
 		break;
 	}
 	case "ban":{
+		const length = setLength(req.body.length);
+		const date = moment();
+		const endDate = moment(date).add(length, "days");
+		const currentBan = await Ban.findOne({
+			userId: req.params.id
+		}).sort({
+			_id: -1
+		}).limit(1);
+		if (currentBan != null){
+			if (moment(currentBan.endDate).diff(endDate) > 0){
+				req.flash("error", "Nie można nadać banicji trwającej krócej niż obecna.");
+				res.redirect("/users/"+req.params.id);
+				break;
+			}
+		}
 		const ban = new Ban;
 		ban.userId = req.params.id;
 		ban.authorId = req.user._id;
 		ban.reason = req.body.reason;
-		const date = moment();
-		const length = setLength(req.body.length);
-		const endDate = moment(date).add(length, "days");
 		ban.endDate = endDate;
-		ban.save(insertToDb);
+		ban.save(err => insertToDb(err, "Pomyślnie nadano banicje."));
 		break;
 	}
 	case "block":{
@@ -451,7 +471,7 @@ router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 		const length = setLength(req.body.length);
 		const endDate = moment(date).add(length, "days");
 		block.endDate = endDate;
-		block.save(insertToDb);
+		block.save(err => insertToDb(err, "Pomyślnie nadano blokade."));
 		break;
 	}
 	}

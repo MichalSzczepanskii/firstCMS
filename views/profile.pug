@@ -50,6 +50,20 @@ block content
                             span
                                 a(href='/articles/'+warn.authorId)= ucfirst(warn.author)
                             span #{warn.reason}
+                if(typeof bans != 'undefined')
+                    h3 Banicje
+                    div(class='tableHead col-4')
+                        span Data
+                        span Nadał
+                        span Powód
+                        span Wygasa
+                    each ban, i in bans
+                        div(class='tableRow col-4')
+                            span #{polishDate(ban.date)}
+                            span
+                                a(href='/articles/'+ban.authorId)= ucfirst(ban.author)
+                            span #{ban.reason}
+                            span #{dateHour(ban.endDate)}
                 if(typeof articleLogs != 'undefined')
                     h3 Artykuły
                     div(class='tableHead col-5')
