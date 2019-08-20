@@ -148,6 +148,14 @@ app.locals.fullDate = function(value){
 	const y = value.getFullYear();
 	return `${d}.${m}.${y}`;
 };
+app.locals.dateHour = function(value){
+	const d = ("0" + value.getDate()).slice(-2);
+	const m = ("0" + (value.getMonth() + 1)).slice(-2);
+	const y = value.getFullYear();
+	const h = ("0" + value.getHours()).slice(-2);
+	const min = ("0" + value.getMinutes()).slice(-2);
+	return `${d}.${m}.${y} ${h}:${min}`;
+};
 
 app.locals.polishRank = function(value){
 	const typeTranslate = {
