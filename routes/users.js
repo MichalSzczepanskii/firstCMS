@@ -478,6 +478,33 @@ router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 	
 });
 
+router.get("/:id/:action/:type/:banId", ensureAuthenticated, punishAccess, async(req, res)=>{
+	const user = await User.findById(req.params.id);
+	const ban = await Ban.findById(req.params.banId);
+	const redirect = {
+		declineLink: "/users/"+req.params.id,
+	};
+	if (req.params.type === "ban"){
+		redirect.message = "Powód: " + ban.reason + " | Koniec: " + moment(ban.endDate).format("DD/MM/YYYY");
+		if (req.params.action == "delete"){
+			redirect.title = "Czy na pewno chcesz usunąć banicje użytkownika " + user.username.charAt(0).toUpperCase() + user.username.slice(1) + "?";
+			redirect.acceptLink = req.params.id + "/delete/ban/" + req.params.banId + "?_method=DELETE";
+		} else if (req.params.action == "dezactivate"){
+			redirect.title = "Czy na pewno chcesz dezaktywować banicje użytkownika " + user.username.charAt(0).toUpperCase() + user.username.slice(1) + "?",
+			redirect.acceptLink = req.params.id + "/dezactivate/ban/" + req.params.banId;
+		} else {
+			req.flash("error", "Nie znaleziono podanego linku.");
+			res.redirect("/");
+		}
+		
+	}
+	else {
+		req.flash("error", "Nie znaleziono podanego linku.");
+		res.redirect("/");
+	}
+	res.render("ensure",redirect);
+});
+
 //edit user profile
 router.get("/edit/:id",ensureAuthenticated,editAccess, async(req, res) => {
 	User.findById(req.params.id, async(err, userP) => {

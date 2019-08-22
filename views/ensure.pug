@@ -1,0 +1,10 @@
+extends layout
+block content
+    div.main-part.pageTitle
+        h1.pageTitle #{title}
+
+    div.main-part.subPage
+        div #{message}
+        a.btn.btn-edit(href=declineLink) Nie
+        form#deleteForm(method="POST" action=acceptLink)
+            input.btn.btn-danger(type="submit" value='Tak')

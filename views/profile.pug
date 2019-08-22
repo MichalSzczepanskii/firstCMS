@@ -40,30 +40,41 @@ block content
                     h2 Logi
                 if(typeof warns != 'undefined')
                     h3 Ostrzeżenia
-                    div(class='tableHead col-3')
+                    div(class=punishUser? "tableHead col-4":"tableHead col-3")
                         span Data
                         span Nadał
                         span Powód
+                        if punishUser
+                            span Moderacja
                     each warn, i in warns
-                        div(class='tableRow col-3')
+                        div(class=punishUser? "tableRow col-4":"tableRow col-3")
                             span #{polishDate(warn.date)}
                             span
                                 a(href='/articles/'+warn.authorId)= ucfirst(warn.author)
                             span #{warn.reason}
+                            if punishUser
+                                    span
+                                        a(href="#") Usuń
                 if(typeof bans != 'undefined')
                     h3 Banicje
-                    div(class='tableHead col-4')
+                    div(class=punishUser? "tableHead col-5":"tableHead col-4")
                         span Data
                         span Nadał
                         span Powód
                         span Wygasa
+                        if punishUser
+                            span Moderacja
                     each ban, i in bans
-                        div(class='tableRow col-4')
-                            span #{polishDate(ban.date)}
-                            span
-                                a(href='/articles/'+ban.authorId)= ucfirst(ban.author)
-                            span #{ban.reason}
-                            span #{dateHour(ban.endDate)}
+                            div(class=punishUser? "tableRow col-5":"tableRow col-4")
+                                span #{polishDate(ban.date)}
+                                span
+                                    a(href='/articles/'+ban.authorId)= ucfirst(ban.author)
+                                span #{ban.reason}
+                                span #{dateHour(ban.endDate)}
+                                if punishUser
+                                    span
+                                        a(href= userP._id.toString() + "/delete/ban/" + ban._id.toString()) Usuń
+                                        a(href=userP._id.toString() + "/dezactivate/ban/" + ban._id.toString()) Dezaktywuj
                 if(typeof articleLogs != 'undefined')
                     h3 Artykuły
                     div(class='tableHead col-5')
