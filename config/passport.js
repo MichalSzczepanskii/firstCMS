@@ -37,14 +37,19 @@ module.exports = (passport) => {
 							userId: user._id
 						}, (err, ban) =>{
 							if (ban != null){
-								const currentDate = moment();
-								if (moment(ban.endDate).diff(currentDate) > 0){
-									return done(null, false, {
-										message: `Jesteś zbanowany do ${fullDate(ban.endDate)} za ${ban.reason}`
-									});
+								if (!ban.dezactivate){
+									const currentDate = moment();
+									if (moment(ban.endDate).diff(currentDate) > 0){
+										return done(null, false, {
+											message: `Jesteś zbanowany do ${fullDate(ban.endDate)} za ${ban.reason}`
+										});
+									} else {
+										return done(null, user);
+									}
 								} else {
 									return done(null, user);
 								}
+								
 							} else {
 								return done(null, user);
 							}

@@ -70,7 +70,10 @@ block content
                                 span
                                     a(href='/articles/'+ban.authorId)= ucfirst(ban.author)
                                 span #{ban.reason}
-                                span #{dateHour(ban.endDate)}
+                                if ban.dezactivate
+                                    span Dezaktywowano
+                                else
+                                    span #{dateHour(ban.endDate)}
                                 if punishUser
                                     span
                                         a(href= userP._id.toString() + "/delete/ban/" + ban._id.toString()) Usuń

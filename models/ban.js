@@ -22,6 +22,10 @@ const BanDetailsSchema = mongoose.Schema({
 	endDate:{
 		type: Date,
 		required: true
+	},
+	dezactivate:{
+		type: Boolean,
+		default: false
 	}
 });
 
