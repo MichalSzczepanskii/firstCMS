@@ -480,28 +480,41 @@ router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 });
 
 router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, async(req, res)=>{
+	function doesntFind(){
+		req.flash("error", "Nie znaleziono podanego linku.");
+		res.redirect("/");
+	}
+	function username(user){
+		return user.username.charAt(0).toUpperCase() + user.username.slice(1);
+	}
 	const user = await User.findById(req.params.id);
-	const ban = await Ban.findById(req.params.typeId);
 	const redirect = {
 		declineLink: "/users/"+req.params.id,
 	};
 	if (req.params.type === "ban"){
+		const ban = await Ban.findById(req.params.typeId);
+		if (!ban) {doesntFind();}
 		redirect.message = "Powód: " + ban.reason + " | Koniec: " + moment(ban.endDate).format("DD/MM/YYYY");
 		if (req.params.action == "delete"){
-			redirect.title = "Czy na pewno chcesz usunąć banicje użytkownika " + user.username.charAt(0).toUpperCase() + user.username.slice(1) + "?";
+			redirect.title = "Czy na pewno chcesz usunąć banicje użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/delete/ban/" + req.params.typeId + "?_method=DELETE";
 		} else if (req.params.action == "dezactivate"){
-			redirect.title = "Czy na pewno chcesz dezaktywować banicje użytkownika " + user.username.charAt(0).toUpperCase() + user.username.slice(1) + "?",
+			redirect.title = "Czy na pewno chcesz dezaktywować banicje użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/dezactivate/ban/" + req.params.typeId;
 		} else {
 			req.flash("error", "Nie znaleziono podanego linku.");
 			res.redirect("/");
 		}
+	} else if (req.params.type === "warn"){
+		if (req.params.action === "delete"){
+			const warn = await Warn.findById(req.params.typeId);
+			if (!warn) {doesntFind();}
+			redirect.message = "Powód: " + warn.reason;
+			redirect.title = "Czy na pewno chcesz usunąć ostrzeżenie użytkownika " + username(user) + "?";
+			redirect.acceptLink = "/users/" + req.params.id + "/delete/warn/" + req.params.typeId + "?_method=DELETE";
+		} else {doesntFind();}
 	}
-	else {
-		req.flash("error", "Nie znaleziono podanego linku.");
-		res.redirect("/");
-	}
+	else {doesntFind();}
 	res.render("ensure",redirect);
 });
 router.delete("/:id/delete/:type/:typeId", ensureAuthenticated, punishAccess, async(req, res) => {
@@ -509,8 +522,28 @@ router.delete("/:id/delete/:type/:typeId", ensureAuthenticated, punishAccess, as
 		_id: mongoose.Types.ObjectId(req.params.typeId)
 	};
 	if (req.params.type === "ban"){
-		Ban.remove(query, err => executeQuery(err, req, res, "Pomyślnie usunięto banicje.", "/users/" + req.params.id));
+		Ban.findById(query, (err, ban) =>{
+			if (err) {
+				console.log(err);
+			} else {
+				if (ban){
+					Ban.deleteOne(query, err => executeQuery(err, req, res, "Pomyślnie usunięto banicje.", "/users/" + req.params.id));
+				}
+			}
+		});
 	}
+	if (req.params.type === "warn"){
+		Warn.findById(query, (err, warn) => {
+			if (err){
+				console.log(err);
+			} else {
+				if (warn){
+					Warn.deleteOne(query, err => executeQuery(err, req, res, "Pomyślnie usunięto ostrzeżenie.", "/users/"+ req.params.id));
+				}
+			}
+		});
+	}
+
 });
 
 router.post("/:id/dezactivate/:type/:typeId", ensureAuthenticated, punishAccess, async(req, res) => {

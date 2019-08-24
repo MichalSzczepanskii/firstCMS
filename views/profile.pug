@@ -54,7 +54,7 @@ block content
                             span #{warn.reason}
                             if punishUser
                                     span
-                                        a(href="#") Usuń
+                                        a(href= userP._id.toString() + "/delete/warn/" + warn._id.toString()) Usuń
                 if(typeof bans != 'undefined')
                     h3 Banicje
                     div(class=punishUser? "tableHead col-5":"tableHead col-4")
