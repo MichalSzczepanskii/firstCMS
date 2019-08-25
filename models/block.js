@@ -21,7 +21,11 @@ const BlockDetailsSchema = mongoose.Schema({
 	},
 	endDate:{
 		type: Date,
-		default: new Date()
+		required: true
+	},
+	dezactivate:{
+		type: Boolean,
+		default: false
 	}
 });
 

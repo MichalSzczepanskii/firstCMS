@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 //Setup validation
 const {
@@ -12,17 +13,18 @@ const Article = require("../models/article");
 const User = require("../models/user");
 const ArticleLog = require("../models/articleLog");
 const Rank = require("../models/rank");
+const Block = require("../models/block");
 
 //Displaying form for adding article
-router.get("/add",ensureAuthenticated, addArtAccess, (req, res) =>{
-	res.render("add_article.pug");
+router.get("/add",ensureAuthenticated, addArtAccess, blockExists, (req, res) =>{
+	res.render("add_article");
 });
 
 //Handle post request from form
 router.post("/add",[
 	check("title","Tytuł jest wymagany.").not().isEmpty(),
 	check("content","Treść jest wymagana.").not().isEmpty()
-],ensureAuthenticated, addArtAccess, (req, res) => {
+],ensureAuthenticated, addArtAccess, blockExists, (req, res) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()){
 		res.render("add_article",{
@@ -318,6 +320,39 @@ function ensureAuthenticated(req, res, next){
 	} else {
 		req.flash("error", "Brak dostępu.");
 		res.redirect("/");
+	}
+}
+
+async function blockExists(req, res, next){
+	const fullDate = function(value){
+		const d = ("0" + value.getDate()).slice(-2);
+		const m = ("0" + (value.getMonth() + 1)).slice(-2);
+		const y = value.getFullYear();
+		const h = ("0" + value.getHours()).slice(-2);
+		const min = ("0" + value.getMinutes()).slice(-2);
+		return `${d}.${m}.${y} ${h}:${min}`;
+	};
+	const block = await Block.findOne({
+		userId: req.user._id
+	}).sort({
+		_id: -1
+	}).limit(1);
+	if (block){
+		if (!block.dezactivate){
+			const currentDate = moment();
+			if (moment(block.endDate).diff(currentDate) > 0){
+				req.flash("error", `Masz aktywną blokadę dodawania artykułów. Wygasa: ${fullDate(block.endDate)} Powód: ${block.reason}`);
+				res.redirect("/");
+			} else {
+				return next();
+			}
+		} else
+		{
+			return next();
+		}
+		
+	} else {
+		return next();
 	}
 }
 

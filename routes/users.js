@@ -377,6 +377,12 @@ router.get("/:id", async(req, res) => {
 						redirect.bans = bans;
 						redirect.displayLogs = true;
 					}
+
+					const blocks = await Block.aggregate(query);
+					if (blocks != ""){
+						redirect.blocks = blocks;
+						redirect.displayLogs = true;
+					}
 				}
 			}
 			res.render("profile",redirect);
@@ -491,28 +497,49 @@ router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, asyn
 	const redirect = {
 		declineLink: "/users/"+req.params.id,
 	};
-	if (req.params.type === "ban"){
+	if (req.params.type === "ban")
+	{
 		const ban = await Ban.findById(req.params.typeId);
 		if (!ban) {doesntFind();}
 		redirect.message = "Powód: " + ban.reason + " | Koniec: " + moment(ban.endDate).format("DD/MM/YYYY");
-		if (req.params.action == "delete"){
+		if (req.params.action == "delete")
+		{
 			redirect.title = "Czy na pewno chcesz usunąć banicje użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/delete/ban/" + req.params.typeId + "?_method=DELETE";
-		} else if (req.params.action == "dezactivate"){
+		} 
+		else if (req.params.action == "dezactivate")
+		{
 			redirect.title = "Czy na pewno chcesz dezaktywować banicje użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/dezactivate/ban/" + req.params.typeId;
-		} else {
-			req.flash("error", "Nie znaleziono podanego linku.");
-			res.redirect("/");
-		}
-	} else if (req.params.type === "warn"){
-		if (req.params.action === "delete"){
+		} 
+		else {doesntFind();}
+	} 
+	else if (req.params.type === "warn"){
+		if (req.params.action === "delete")
+		{
 			const warn = await Warn.findById(req.params.typeId);
 			if (!warn) {doesntFind();}
 			redirect.message = "Powód: " + warn.reason;
 			redirect.title = "Czy na pewno chcesz usunąć ostrzeżenie użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/delete/warn/" + req.params.typeId + "?_method=DELETE";
-		} else {doesntFind();}
+		} 
+		else {doesntFind();}
+	}
+	else if (req.params.type === "block"){
+		const block = await Block.findById(req.params.typeId);
+		if (!block) {doesntFind();}
+		redirect.message = "Powód: " + block.reason + " | Koniec: " + moment(block.endDate).format("DD/MY/YYYY");
+		if (req.params.action === "delete")
+		{
+			redirect.title = "Czy na pewno chcesz usunąć blokadę użytkownika " + username(user) + "?";
+			redirect.acceptLink = "/users/" + req.params.id + "/delete/block/" + req.params.typeId + "?_method=DELETE";
+		}
+		else if (req.params.action === "dezactivate")
+		{
+			redirect.title = "Czy na pewno chcesz dezaktywować blokade użytkownika " + username(user) + "?";
+			redirect.acceptLink = "/users/" + req.params.id + "/dezactivate/block/" + req.params.typeId;
+		}
+		else {doesntFind();}
 	}
 	else {doesntFind();}
 	res.render("ensure",redirect);
@@ -543,6 +570,23 @@ router.delete("/:id/delete/:type/:typeId", ensureAuthenticated, punishAccess, as
 			}
 		});
 	}
+	if (req.params.type === "block")
+	{
+		Block.findById(query, (err, block) => {
+			if (err)
+			{
+				console.log(err);
+				return;
+			} 
+			else 
+			{
+				if (block)
+				{
+					Block.deleteOne(query, err => executeQuery(err, req, res, "Pomyślnie usunięto blokade.", "/users/" + req.params.id));
+				}
+			}
+		});
+	}
 
 });
 
@@ -569,6 +613,32 @@ router.post("/:id/dezactivate/:type/:typeId", ensureAuthenticated, punishAccess,
 			}
 		});
 		
+	}
+	if (req.params.type === "block")
+	{
+		Block.findById(req.params.typeId, (err, block) => {
+			if (err){
+				console.log(err);
+				return;
+			} else
+			{
+				if (!block.dezactivate){
+					Block.updateOne({
+						_id: mongoose.Types.ObjectId(req.params.typeId)
+					},
+					{
+						$set: {
+							dezactivate: true
+						}
+					}, err => executeQuery(err, req, res, "Pomyślnie dezaktywowano blokade.", "/users/" + req.params.id));
+				}
+				else
+				{
+					req.flash("error", "Ta blokada jest już dezaktywowana.");
+					res.redirect("/users/" + req.params.id);
+				}
+			}
+		});
 	}
 });
 

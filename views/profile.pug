@@ -78,6 +78,29 @@ block content
                                     span
                                         a(href= userP._id.toString() + "/delete/ban/" + ban._id.toString()) Usuń
                                         a(href=userP._id.toString() + "/dezactivate/ban/" + ban._id.toString()) Dezaktywuj
+                if(typeof blocks != 'undefined')
+                    h3 Blokady dodawania artykułów
+                    div(class=punishUser? "tableHead col-5":"tableHead col-4")
+                        span Data
+                        span Nadał
+                        span Powód
+                        span Wygasa
+                        if punishUser
+                            span Moderacja
+                    each block, i in blocks
+                            div(class=punishUser? "tableRow col-5":"tableRow col-4")
+                                span #{polishDate(block.date)}
+                                span
+                                    a(href='/articles/'+block.authorId)= ucfirst(block.author)
+                                span #{block.reason}
+                                if block.dezactivate
+                                    span Dezaktywowano
+                                else
+                                    span #{dateHour(block.endDate)}
+                                if punishUser
+                                    span
+                                        a(href= userP._id.toString() + "/delete/block/" + block._id.toString()) Usuń
+                                        a(href=userP._id.toString() + "/dezactivate/block/" + block._id.toString()) Dezaktywuj
                 if(typeof articleLogs != 'undefined')
                     h3 Artykuły
                     div(class='tableHead col-5')
