@@ -77,7 +77,10 @@ block content
                                 if punishUser
                                     span
                                         a(href= userP._id.toString() + "/delete/ban/" + ban._id.toString()) Usuń
-                                        a(href=userP._id.toString() + "/dezactivate/ban/" + ban._id.toString()) Dezaktywuj
+                                        if !ban.dezactivate
+                                            - let date = new Date()
+                                            if (date.getTime() - ban.endDate.getTime() <= 0)
+                                                a(href=userP._id.toString() + "/dezactivate/ban/" + ban._id.toString(), style="margin-left: 4px;") Dezaktywuj
                 if(typeof blocks != 'undefined')
                     h3 Blokady dodawania artykułów
                     div(class=punishUser? "tableHead col-5":"tableHead col-4")
@@ -100,7 +103,10 @@ block content
                                 if punishUser
                                     span
                                         a(href= userP._id.toString() + "/delete/block/" + block._id.toString()) Usuń
-                                        a(href=userP._id.toString() + "/dezactivate/block/" + block._id.toString()) Dezaktywuj
+                                        if !block.dezactivate
+                                            - let date = new Date()
+                                            if (date.getTime() - block.endDate.getTime() <= 0)
+                                                a(href=userP._id.toString() + "/dezactivate/block/" + block._id.toString(), style="margin-left: 4px;") Dezaktywuj
                 if(typeof articleLogs != 'undefined')
                     h3 Artykuły
                     div(class='tableHead col-5')

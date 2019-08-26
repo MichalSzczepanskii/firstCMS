@@ -485,10 +485,11 @@ router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 	
 });
 
-router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, async(req, res)=>{
+router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, async(req, res, next)=>{
 	function doesntFind(){
 		req.flash("error", "Nie znaleziono podanego linku.");
 		res.redirect("/");
+		return next();
 	}
 	function username(user){
 		return user.username.charAt(0).toUpperCase() + user.username.slice(1);
@@ -501,6 +502,13 @@ router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, asyn
 	{
 		const ban = await Ban.findById(req.params.typeId);
 		if (!ban) {doesntFind();}
+		const date = moment();	
+		if (moment(ban.endDate).diff(date) <= 0)
+		{
+			req.flash("error", "Banicja już wygasła.");
+			res.redirect("/users/"+req.params.id);
+			return next();
+		}
 		redirect.message = "Powód: " + ban.reason + " | Koniec: " + moment(ban.endDate).format("DD/MM/YYYY");
 		if (req.params.action == "delete")
 		{
@@ -509,6 +517,7 @@ router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, asyn
 		} 
 		else if (req.params.action == "dezactivate")
 		{
+			if (ban.dezactivate) {doesntFind();}
 			redirect.title = "Czy na pewno chcesz dezaktywować banicje użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/dezactivate/ban/" + req.params.typeId;
 		} 
@@ -528,6 +537,13 @@ router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, asyn
 	else if (req.params.type === "block"){
 		const block = await Block.findById(req.params.typeId);
 		if (!block) {doesntFind();}
+		const date = moment();
+		if (moment(block.endDate).diff(date) <= 0)
+		{
+			req.flash("error", "Blokada już wygasła.");
+			res.redirect("/users/"+req.params.id);
+			return next();
+		}
 		redirect.message = "Powód: " + block.reason + " | Koniec: " + moment(block.endDate).format("DD/MY/YYYY");
 		if (req.params.action === "delete")
 		{
@@ -536,6 +552,7 @@ router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, asyn
 		}
 		else if (req.params.action === "dezactivate")
 		{
+			if (block.dezactivate) {doesntFind();}
 			redirect.title = "Czy na pewno chcesz dezaktywować blokade użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/dezactivate/block/" + req.params.typeId;
 		}
