@@ -172,6 +172,11 @@ const articles = require("./routes/articles");
 
 app.use("/users", users);
 app.use("/articles", articles);
+app.use((req, res) => {
+	res.status(404);
+	res.render("404");
+});
+
 
 //Start server
 const port = process.env.PORT || 3000;
