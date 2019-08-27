@@ -486,11 +486,6 @@ router.post("/:id/action/:type", ensureAuthenticated, punishAccess, [
 });
 
 router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, async(req, res, next)=>{
-	function doesntFind(){
-		req.flash("error", "Nie znaleziono podanego linku.");
-		res.redirect("/");
-		return next();
-	}
 	function username(user){
 		return user.username.charAt(0).toUpperCase() + user.username.slice(1);
 	}
@@ -501,7 +496,7 @@ router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, asyn
 	if (req.params.type === "ban")
 	{
 		const ban = await Ban.findById(req.params.typeId);
-		if (!ban) {doesntFind();}
+		if (!ban) {return404(req, res, next);}
 		const date = moment();	
 		if (moment(ban.endDate).diff(date) <= 0)
 		{
@@ -517,26 +512,26 @@ router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, asyn
 		} 
 		else if (req.params.action == "dezactivate")
 		{
-			if (ban.dezactivate) {doesntFind();}
+			if (ban.dezactivate) {return404(req, res, next);}
 			redirect.title = "Czy na pewno chcesz dezaktywować banicje użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/dezactivate/ban/" + req.params.typeId;
 		} 
-		else {doesntFind();}
+		else {return404(req, res, next);}
 	} 
 	else if (req.params.type === "warn"){
 		if (req.params.action === "delete")
 		{
 			const warn = await Warn.findById(req.params.typeId);
-			if (!warn) {doesntFind();}
+			if (!warn) {return404(req, res, next);}
 			redirect.message = "Powód: " + warn.reason;
 			redirect.title = "Czy na pewno chcesz usunąć ostrzeżenie użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/delete/warn/" + req.params.typeId + "?_method=DELETE";
 		} 
-		else {doesntFind();}
+		else {return404(req, res, next);}
 	}
 	else if (req.params.type === "block"){
 		const block = await Block.findById(req.params.typeId);
-		if (!block) {doesntFind();}
+		if (!block) {return404(req, res, next);}
 		const date = moment();
 		if (moment(block.endDate).diff(date) <= 0)
 		{
@@ -552,13 +547,13 @@ router.get("/:id/:action/:type/:typeId", ensureAuthenticated, punishAccess, asyn
 		}
 		else if (req.params.action === "dezactivate")
 		{
-			if (block.dezactivate) {doesntFind();}
+			if (block.dezactivate) {return404(req, res, next);}
 			redirect.title = "Czy na pewno chcesz dezaktywować blokade użytkownika " + username(user) + "?";
 			redirect.acceptLink = "/users/" + req.params.id + "/dezactivate/block/" + req.params.typeId;
 		}
-		else {doesntFind();}
+		else {return404(req, res, next);}
 	}
-	else {doesntFind();}
+	else {return404(req, res, next);}
 	res.render("ensure",redirect);
 });
 router.delete("/:id/delete/:type/:typeId", ensureAuthenticated, punishAccess, async(req, res) => {
@@ -765,6 +760,12 @@ function ensureAuthenticated(req, res, next){
 		req.flash("error", "Brak dostępu.");
 		res.redirect("/");
 	}
+}
+
+function return404(req, res, next){
+	res.status(404);
+	res.render("404");
+	return next();
 }
 
 module.exports = router;
